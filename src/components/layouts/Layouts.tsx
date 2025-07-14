@@ -30,23 +30,33 @@ const Layout = ({ children }: CommonProps) => {
     }, [hcfDataFromApi])
 
     return (
-        <Suspense
-            fallback={
-                <div className="flex flex-auto flex-col h-[100vh]">
-                    <Loading loading={true} />
-                </div>
-            }
-        >
-            <Loading loading={loadingStatus}>
-                {authenticated ? (
-                    <PostLoginLayout layoutType={layoutType}>
-                        {children}
-                    </PostLoginLayout>
-                ) : (
-                    <PreLoginLayout>{children}</PreLoginLayout>
-                )}
-            </Loading>
-        </Suspense>
+        <>
+            {/* Skip link for accessibility */}
+            <a href="#main-content" className="sr-only focus:not-sr-only absolute top-0 left-0 bg-primary text-white p-2 z-50">Skip to main content</a>
+            <Suspense
+                fallback={
+                    <div className="flex flex-auto flex-col h-[100vh]">
+                        <Loading loading={true} />
+                    </div>
+                }
+            >
+                <Loading loading={loadingStatus}>
+                    {authenticated ? (
+                        <PostLoginLayout layoutType={layoutType}>
+                            <main id="main-content" role="main" tabIndex={-1}>
+                                {children}
+                            </main>
+                        </PostLoginLayout>
+                    ) : (
+                        <PreLoginLayout>
+                            <main id="main-content" role="main" tabIndex={-1}>
+                                {children}
+                            </main>
+                        </PreLoginLayout>
+                    )}
+                </Loading>
+            </Suspense>
+        </>
     )
 }
 

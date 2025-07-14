@@ -95,7 +95,11 @@ const DefaultItem = (props: DefaultItemProps) => {
 
     return (
         <AuthorityCheck userAuthority={userAuthority} authority={nav.authority}>
-            <MenuItem key={nav.key} eventKey={nav.key} dotIndent={indent}>
+            <MenuItem key={nav.key} eventKey={nav.key} dotIndent={indent}
+                tabIndex={0}
+                role="menuitem"
+                aria-label={t(nav.translateKey, nav.title)}
+            >
                 <Link
                     to={nav.path}
                     className="flex items-center gap-2 h-full w-full"
@@ -107,6 +111,8 @@ const DefaultItem = (props: DefaultItemProps) => {
                             path: nav.path,
                         })
                     }
+                    tabIndex={-1}
+                    aria-label={t(nav.translateKey, nav.title)}
                 >
                     {showIcon && <VerticalMenuIcon icon={nav.icon} />}
                     {showTitle && <span>{t(nav.translateKey, nav.title)}</span>}

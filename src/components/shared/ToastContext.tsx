@@ -34,12 +34,16 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed top-6 right-6 z-50 flex flex-col gap-2">
+      <div className="fixed top-6 right-6 z-50 flex flex-col gap-2"
+        aria-live="assertive"
+        role="region"
+      >
         {toasts.map((toast) => (
           <div
             key={toast.id}
             className={`px-4 py-3 rounded shadow text-white font-semibold transition-all
               ${toast.type === 'success' ? 'bg-green-600' : toast.type === 'error' ? 'bg-red-600' : 'bg-blue-600'}`}
+            role="alert"
           >
             {toast.message}
           </div>

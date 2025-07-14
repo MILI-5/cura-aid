@@ -1,7 +1,12 @@
 // views/Home/components/Home.tsx
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../../../components/shared/Footer';
 import { motion } from 'framer-motion';
+import GenerativeChat from '../../chat-bot/GenerativeChat';
+import StartYourJourney from './StartYourJourney';
+import Treatment from '../../chat-bot/components/ChatBox/components/Treatment';
+import UploadMedicalReports from '@/components/shared/UploadMedicalReports';
 
 const testimonials = [
   {
@@ -25,6 +30,22 @@ const testimonials = [
 ];
 
 const Home: React.FC = () => {
+    const [chatModalOpen, setChatModalOpen] = useState(false);
+    const [showUpload, setShowUpload] = useState(false);
+    const [activeStep, setActiveStep] = useState(0);
+    const [showSymptomChecker, setShowSymptomChecker] = useState(false);
+    const [symptomInput, setSymptomInput] = useState('');
+    const [symptomResult, setSymptomResult] = useState<string | null>(null);
+    const stepContents = [
+      'Welcome to the Inquiry step. Here you can ask questions about your treatment journey.',
+      'Assessment step: Our team will review your information and provide recommendations.',
+      'Planning step: We will help you plan your treatment and next steps.',
+      'Scheduled step: Your treatment has been scheduled. Prepare for your visit.',
+      'In Treatment: You are currently undergoing treatment. Our team is here to support you.',
+      'Post Treatment: Review your recovery and next steps.',
+      'Completed: Your treatment journey is complete. Thank you!'
+    ];
+    const navigate = useNavigate();
     return (
     <div className="min-h-screen font-sans bg-offwhite">
       {/* Hero Section */}
@@ -416,14 +437,64 @@ const Home: React.FC = () => {
           </p>
           <button
             className="inline-block bg-primary text-white font-bold px-8 py-3 rounded shadow hover:bg-accent transition text-lg focus:outline-none focus:ring-2 focus:ring-accent"
-            onClick={() => alert('Symptom Checker coming soon!')}
+            onClick={() => setShowSymptomChecker(true)}
           >
             Check Your Symptoms
           </button>
         </motion.div>
+        {showSymptomChecker && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md relative">
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
+                onClick={() => { setShowSymptomChecker(false); setSymptomInput(''); setSymptomResult(null); }}
+                aria-label="Close symptom checker"
+              >
+                &times;
+              </button>
+              <h3 className="text-lg font-bold mb-4">Symptom Checker</h3>
+              {!symptomResult ? (
+                <form onSubmit={e => { e.preventDefault(); setSymptomResult('Possible conditions: Common Cold, Flu, or Allergies. Please consult a doctor for a professional diagnosis.'); }}>
+                  <label className="block text-left mb-2 font-medium">Describe your symptoms:</label>
+                  <textarea
+                    className="w-full p-2 border rounded mb-4 text-black"
+                    rows={4}
+                    value={symptomInput}
+                    onChange={e => setSymptomInput(e.target.value)}
+                    placeholder="e.g. headache, fever, sore throat"
+                    required
+                  />
+                  <button type="submit" className="bg-primary text-white px-4 py-2 rounded font-bold w-full">Check</button>
+                </form>
+              ) : (
+                <div>
+                  <div className="mb-4 text-primary font-semibold">{symptomResult}</div>
+                  <button className="bg-primary text-white px-4 py-2 rounded font-bold w-full" onClick={() => { setSymptomResult(null); setSymptomInput(''); }}>Check Another</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
-      {/* Live Chat & Support Section */}
+      {/* Treatment Journey Stepper + File Upload */}
+      <section className="py-10 px-4 md:px-0 bg-white dark:bg-gray-900">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl font-bold text-primary mb-4">Your Treatment Journey</h2>
+          <Treatment activeStep={activeStep} setActiveStep={setActiveStep} />
+          <div className="my-4">
+            <div className="bg-accent/10 rounded-lg p-4 text-primary text-center min-h-[60px]">
+              {stepContents[activeStep]}
+            </div>
+            <div className="flex justify-center mt-4">
+              <button className="btn-primary mr-2" onClick={() => setShowUpload(true)}>Upload Medical Report</button>
+            </div>
+            {showUpload && <UploadMedicalReports setPopupStatus={setShowUpload} />}
+          </div>
+        </div>
+      </section>
+
+      {/* Live Chat Box (right side on desktop, modal on mobile) */}
       <section id="live-chat-support" className="py-16 px-4 md:px-0 bg-accent/5 dark:bg-gray-800">
         <motion.div
           className="max-w-2xl mx-auto text-center"
@@ -437,11 +508,36 @@ const Home: React.FC = () => {
           <p className="text-lg text-primary/90 mb-6">Need help? Our support team is here to assist you with appointments, records, billing, and more. Click below to start a chat or send a support request.</p>
           <button
             className="inline-block bg-primary text-white font-bold px-8 py-3 rounded shadow hover:bg-accent transition text-lg focus:outline-none focus:ring-2 focus:ring-accent"
-            onClick={() => alert('Live chat coming soon! For now, please email support@curaaid.com')}
+            onClick={() => setChatModalOpen(true)}
           >
             Start Live Chat
           </button>
         </motion.div>
+        {chatModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 w-full max-w-3xl relative">
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
+                onClick={() => setChatModalOpen(false)}
+                aria-label="Close chat modal"
+              >
+                &times;
+              </button>
+              <div className="mb-4 flex justify-between items-center">
+                <h3 className="text-lg font-bold">Live Chat Support</h3>
+                <button
+                  className="btn-secondary"
+                  onClick={() => { setChatModalOpen(false); navigate('/chat-bot'); }}
+                >
+                  Go to Full Chat
+                </button>
+              </div>
+              <div className="h-[500px] overflow-y-auto">
+                <GenerativeChat />
+              </div>
+            </div>
+          </div>
+        )}
       </section>
       <Footer />
         </div>

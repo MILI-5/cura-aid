@@ -1,1 +1,33 @@
+:root {
+  --tenant-primary: #3b82f6;
+}
 
+.btn-primary {
+  background: var(--tenant-primary) !important;
+  color: #fff !important;
+  border: none;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: color-mix(in srgb, var(--tenant-primary) 80%, #000 20%) !important;
+}
+
+.text-primary {
+  color: var(--tenant-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--tenant-primary) !important;
+}
+
+a, .link-primary {
+  color: var(--tenant-primary) !important;
+}
+a:hover, .link-primary:hover {
+  text-decoration: underline;
+  color: color-mix(in srgb, var(--tenant-primary) 80%, #000 20%) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--tenant-primary) !important;
+  box-shadow: 0 0 0 2px var(--tenant-primary)33;
+}

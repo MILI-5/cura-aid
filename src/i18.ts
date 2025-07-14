@@ -10,12 +10,21 @@ i18n
                 translation: {
                     welcome: "Welcome to Our Service",
                     description: "We provide the best solutions for your needs.",
+                    button: "Get Started",
                 },
             },
             ar: {
                 translation: {
                     welcome: "مرحبًا بكم في خدمتنا",
                     description: "نحن نقدم أفضل الحلول لاحتياجاتك.",
+                    button: "ابدأ الآن",
+                },
+            },
+            es: {
+                translation: {
+                    welcome: "Bienvenido a nuestro servicio",
+                    description: "Ofrecemos las mejores soluciones para sus necesidades.",
+                    button: "Comenzar",
                 },
             },
         },

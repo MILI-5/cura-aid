@@ -43,6 +43,8 @@ export type User = {
     userName?: string | null
     email?: string | null
     authority?: string[]
+    clinicIds?: string[]
+    stage?: string
 }
 
 export type Token = {

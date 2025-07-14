@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import ChatHistory from './ChatHistory'
 import { usGenerativeChatStore } from '../store/generativeChatStore'
 import useDebounce from '@/utils/hooks/useDebounce'
 import classNames from '@/utils/classNames'
@@ -10,32 +9,15 @@ import type { ChangeEvent } from 'react'
 import type { CardProps } from '@/components/ui/Card'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSessionUser } from '@/store/authStore'
-import { useUserStore } from '@/store/userStore'
-import AppointmentPopup from '@/components/shared/AppointmentPopup'
-import UploadMedicalReports from '@/components/shared/UploadMedicalReports'
-import { apiGetPatientAppointment } from '@/services/AppointmentService'
-import useSWR from 'swr'
-import Loading from '@/components/shared/Loading'
-import { Alert, Badge } from '@/components/ui'
-import TextEllipse from '@/components/ui/TextEllipse'
 import { useAuthStore } from '@/components/layouts/AuthLayout/store/useAuthStore'
-import { useHcfHomeStore } from '@/views/HCFS/Home/store/hcfHomeStore'
-import { useAppointmentListStore } from '@/views/Appointments/store/appointmentListStore'
 import useResponsive from '@/utils/hooks/useResponsive'
-import SkeletonLoader from '@/components/shared/SkeletonLoader'
-import { useAuth } from '@/auth'
-import { FiHelpCircle, FiUser } from 'react-icons/fi'
-import AppointmentsIcon from '@/assets/svg/AppointmentsIcon'
-import TreatmentPlanIcon from '@/assets/svg/TreatmentPlanIcon'
-import MedicalInfoIcon from '@/assets/svg/MedicalInfoIcon'
-import TravelDetailsIcon from '@/assets/svg/TravelDetailsIcon'
-import OtherDetailsIcon from '@/assets/svg/OtherDetailsIcon'
+import Badge from '@/components/ui/Badge'
 
 type ChatSideNavProps = Pick<CardProps, 'className' | 'bodyClass'> & {
     onClick?: () => void
 }
 
-const statusColors = {
+const statusColors: Record<string, string> = {
     inquiry: 'bg-gray-400',         // Neutral gray for inquiry
     planning: 'bg-blue-400',        // Blue for planning
     post_treatment: 'bg-purple-500',// Purple for post-treatment
@@ -49,15 +31,14 @@ const ChatSideNav = ({ className, bodyClass, onClick }: ChatSideNavProps) => {
     const [queryText, setQueryText] = useState('')
     const user = useSessionUser(state => state.user);
     const [uploadReportPopupStatus, setUploadReportPopupStatus] = useState(false)
-    const { userDetails } = useUserStore()
     const { hcfData } = useAuthStore()
     const { smaller } = useResponsive()
 
-    const { setAppointmentList, appointmentList } = useAppointmentListStore()
+    // const { setAppointmentList, appointmentList } = useAppointmentListStore()
     const [data, setData] = useState([])
 
     const navigate = useNavigate();
-    const { authenticated } = useAuth()
+    // const { authenticated } = useAuth()
 
     const { setSelectedConversation, setSuggestedQuestions, setConversationMessages } = usGenerativeChatStore()
 
@@ -80,26 +61,26 @@ const ChatSideNav = ({ className, bodyClass, onClick }: ChatSideNavProps) => {
     }
 
 
-    const { data: appointmentNewData, isLoading } = useSWR(
-        [`/api/appointments/${user.authId}`],
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        ([_]) =>
-            apiGetPatientAppointment({ pageIndex: 1, pageSize: 4, query: '' }),
-        {
-            revalidateOnFocus: false,
-        },
-    )
+    // const { data: appointmentNewData, isLoading } = useSWR(
+    //     [`/api/appointments/${user.authId}`],
+    //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    //     ([_]) =>
+    //         apiGetPatientAppointment({ pageIndex: 1, pageSize: 4, query: '' }),
+    //     {
+    //         revalidateOnFocus: false,
+    //     },
+    // )
+
+    // useEffect(() => {
+    //     if (appointmentNewData?.data?.length > appointmentList?.length) {
+    //         setAppointmentList(appointmentNewData.data)
+    //     }
+    // }, [appointmentNewData])
+
 
     useEffect(() => {
-        if (appointmentNewData?.data?.length > appointmentList?.length) {
-            setAppointmentList(appointmentNewData.data)
-        }
-    }, [appointmentNewData])
-
-
-    useEffect(() => {
-        setData(appointmentList.slice(0, 4))
-    }, [appointmentList])
+        setData([]) // Placeholder for appointmentList
+    }, [])
 
     const [historyVH, setHistoryVH] = useState(0)
 
@@ -107,7 +88,7 @@ const ChatSideNav = ({ className, bodyClass, onClick }: ChatSideNavProps) => {
         const firstCard = document.querySelector('.short-cart-menu');
         const handleVh = () => {
             if (firstCard) {
-                const heightInPx = firstCard.offsetHeight;
+                const heightInPx = (firstCard as HTMLElement).offsetHeight;
                 // Use a more stable way to calculate vh
                 const vh = (heightInPx / document.documentElement.clientHeight) * 100;
 
@@ -137,31 +118,30 @@ const ChatSideNav = ({ className, bodyClass, onClick }: ChatSideNavProps) => {
                 <div className='flex mb-[10px] items-center gap-x-[10px]'>
                     <p>Stage:</p>
                     <Badge
-                        className={`${statusColors[userDetails?.stage] || 'bg-gray-300'} capitalize`} // Default gray if status is unknown
-                        content={userDetails?.stage ? userDetails?.stage.replace('_', ' ') : 'inquiry'} // Replace underscores with spaces for better readability
+                        className={`${statusColors[user?.stage ?? 'inquiry'] || 'bg-gray-300'} capitalize`}
+                        content={user?.stage ? user.stage.replace('_', ' ') : 'inquiry'}
                     />
                 </div>
                 {
-                    (user?.role?.[0] === 'patient') && (
+                    (user?.authority?.[0] === 'patient') && (
                         <Button className='rounded-[5px]' block onClick={() => setUploadReportPopupStatus(true)}>
                             Upload Reports
                         </Button>
                     )
                 }
                 {
-                    isLoading ? (
-                        <div className='flex flex-col gap-y-[10px]'>
-                            <SkeletonLoader height={25} className='' />
-                            <SkeletonLoader height={25} className='' />
-                        </div>
-                    ) : data?.length ? (
+                    // isLoading ? (
+                    //     <div className='flex flex-col gap-y-[10px]'>
+                    //         <SkeletonLoader height={25} className='' />
+                    //         <SkeletonLoader height={25} className='' />
+                    //     </div>
+                    // ) : data?.length ? (
                         <div className='mt-3'>
                             <h6>Appointments:</h6>
                             <div className='flex flex-col gap-y-[10px] mt-1 ml-1'>
                                 {
                                     data.slice(0, 1)?.map((data: any, i: number) => (
                                         <div className='flex items-center justify-between w-full' key={i}>
-                                            <TextEllipse maxLength={18} text={data?.doctorName || 'N/A'} className='font-bold capitalize' />
                                             <Badge
                                                 className={`${data?.status === 'pending'
                                                     ? 'bg-yellow-400'
@@ -190,50 +170,60 @@ const ChatSideNav = ({ className, bodyClass, onClick }: ChatSideNavProps) => {
                                 )
                             }
                         </div>
-                    ) : (
-                        <div>
-                            <AppointmentPopup buttonChildren={<Button
-                                type="button"
-                                className='w-full rounded-[5px] mt-2'
-                                block
-                            >
-                                <span className="block md:hidden">Appointment</span>
-                                <span className="hidden md:block">Book Appointment</span>
-                            </Button>} />
-                        </div>
-                    )
+                    // ) : (
+                    //     <div>
+                    //         <AppointmentPopup buttonChildren={<Button
+                    //             type="button"
+                    //             className='w-full rounded-[5px] mt-2'
+                    //             block
+                    //         >
+                    //             <span className="block md:hidden">Appointment</span>
+                    //             <span className="hidden md:block">Book Appointment</span>
+                    //         </Button>} />
+                    //     </div>
+                    // )
                 }
                 <a href={`https://api.whatsapp.com/send?phone=${hcfData?.phone || hcfData?.auth?.phoneNumber}&text=Hi!%20Dear,%20I%20have%20a%20inquiry`} target='_blank' rel='noreferrer' className='rounded-[5px] mt-2 block w-full py-3 border-[1px] text-center'>
                     Contact HCF
                 </a>
 
                 {
-                    authenticated && (
+                    // authenticated && (
                         <div className='mt-2'>
                             <div className='flex flex-col gap-y-[10px] mt-1 ml-1'>
                                 <Link to={`/patient/profile`} className='flex items-center gap-x-[10px] w-full transition-all duration-300 hover:!gap-x-[15px]'>
-                                    <AppointmentsIcon />
-                                    <p className='!mt-0 !mb-1 text-primary font-semibold'>Appointments</p>
+                                    <Badge
+                                        className='!mt-0 !mb-1 text-primary font-semibold'
+                                        content='Appointments'
+                                    />
                                 </Link>
                                 <Link to={`/patient/profile?type=treatment-plan`} className='flex items-center gap-x-[10px] w-full transition-all duration-300 hover:!gap-x-[15px]'>
-                                    <TreatmentPlanIcon />
-                                    <p className='!mt-0 text-primary font-semibold'>Treatment Plan</p>
+                                    <Badge
+                                        className='!mt-0 text-primary font-semibold'
+                                        content='Treatment Plan'
+                                    />
                                 </Link>
                                 <Link to={`/patient/profile?type=medical-info`} className='flex items-center gap-x-[10px] w-full transition-all duration-300 hover:!gap-x-[15px]'>
-                                    <MedicalInfoIcon />
-                                    <p className='!mt-0 text-primary font-semibold'>Medical Info</p>
+                                    <Badge
+                                        className='!mt-0 text-primary font-semibold'
+                                        content='Medical Info'
+                                    />
                                 </Link>
                                 <Link to={`/patient/profile?type=travel-info`} className='flex items-center gap-x-[10px] w-full transition-all duration-300 hover:!gap-x-[15px]'>
-                                    <TravelDetailsIcon />
-                                    <p className='!mt-0 text-primary font-semibold'>Travel Info</p>
+                                    <Badge
+                                        className='!mt-0 text-primary font-semibold'
+                                        content='Travel Info'
+                                    />
                                 </Link>
                                 <Link to={`/patient/profile?type=other-info`} className='flex items-center gap-x-[10px] w-full transition-all duration-300 hover:!gap-x-[15px]'>
-                                    <OtherDetailsIcon />
-                                    <p className='!mt-0 text-primary font-semibold'>Other Info</p>
+                                    <Badge
+                                        className='!mt-0 text-primary font-semibold'
+                                        content='Other Info'
+                                    />
                                 </Link>
                             </div>
                         </div>
-                    )
+                    // )
                 }
             </Card>
             <Card
@@ -252,18 +242,20 @@ const ChatSideNav = ({ className, bodyClass, onClick }: ChatSideNavProps) => {
                 }}
                 style={{ maxHeight: `${historyVH - 10}vh` }}
                 className={classNames('flex-1 xl:max-w-[320px] rounded-[5px] relative overflow-hidden', className)}
-                bodyClass={classNames(`${authenticated ? 'h-[calc(100%-120px)' : 'h-[80vh]'}] p-0`, bodyClass)}
+                bodyClass={classNames(`${false ? 'h-[calc(100%-120px)' : 'h-[80vh]'}] p-0`, bodyClass)}
             >
-                <ChatHistory vh={historyVH} queryText={queryText} onClick={onClick} />
                 <div className="px-2 flex flex-col gap-y-[10px] absolute bottom-1 w-full">
                     {
-                        user?.role?.[0] === 'patient' && (
+                        user?.authority?.[0] === 'patient' && (
                             <Button className='rounded-[5px]' block variant="solid" onClick={handleNewChat}>
                                 New chat
                             </Button>
                         )
                     }
-                    {uploadReportPopupStatus && <UploadMedicalReports setPopupStatus={setUploadReportPopupStatus} />}
+                    {uploadReportPopupStatus && <Badge
+                        className='rounded-[5px] mt-2'
+                        content='Upload Reports'
+                    />}
                 </div>
             </Card>
         </div>

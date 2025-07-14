@@ -15,14 +15,12 @@ import {
     HEADER_HEIGHT,
     LOGO_X_GUTTER,
 } from '@/constants/theme.constant'
-import type { Mode } from '@/@types/theme'
 
 type SideNavProps = {
     translationSetup?: boolean
     background?: boolean
     className?: string
     contentClass?: string
-    mode?: Mode
 }
 
 const sideNavStyle = {
@@ -40,25 +38,24 @@ const SideNav = ({
     background = true,
     className,
     contentClass,
-    mode,
 }: SideNavProps) => {
-    const defaultMode = useThemeStore((state) => state.mode)
-    const direction = useThemeStore((state) => state.direction)
-    const sideNavCollapse = useThemeStore(
-        (state) => state.layout.sideNavCollapse,
-    )
+    const currentTheme = useThemeStore((state) => state.currentTheme)
 
     const currentRouteKey = useRouteKeyStore((state) => state.currentRouteKey)
 
     const userAuthority = useSessionUser((state) => state.user.authority)
 
+    // Map currentTheme to Logo's mode prop ('light' | 'dark')
+    const logoMode = currentTheme === 'dark' ? 'dark' : 'light';
+
     return (
         <div
-            style={sideNavCollapse ? sideNavCollapseStyle : sideNavStyle}
+            role="navigation"
+            aria-label="Main sidebar navigation"
+            style={sideNavStyle}
             className={classNames(
                 'side-nav',
                 background && 'side-nav-bg',
-                !sideNavCollapse && 'side-nav-expand',
                 className,
             )}
         >
@@ -69,23 +66,18 @@ const SideNav = ({
             >
                 <Logo
                     imgClass="max-h-10"
-                    mode={mode || defaultMode}
-                    type={sideNavCollapse ? 'streamline' : 'full'}
+                    mode={logoMode}
+                    type={'full'}
                     className={classNames(
-                        sideNavCollapse && 'ltr:ml-[11.5px] ltr:mr-[11.5px]',
-                        sideNavCollapse
-                            ? SIDE_NAV_CONTENT_GUTTER
-                            : LOGO_X_GUTTER,
+                        LOGO_X_GUTTER,
                     )}
                 />
             </Link>
             <div className={classNames('side-nav-content', contentClass)}>
-                <ScrollBar style={{ height: '100%' }} direction={direction}>
+                <ScrollBar style={{ height: '100%' }}>
                     <VerticalMenuContent
-                        collapsed={sideNavCollapse}
                         navigationTree={navigationConfig}
                         routeKey={currentRouteKey}
-                        direction={direction}
                         translationSetup={translationSetup}
                         userAuthority={userAuthority || []}
                     />

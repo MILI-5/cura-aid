@@ -5,10 +5,13 @@ import classNames from 'classnames'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { useLocaleStore } from '@/store/localeStore'
 import { HiCheck } from 'react-icons/hi'
+import i18n from '@/i18'
 import type { CommonProps } from '@/@types/common'
 
 const languageList = [
     { label: 'English', value: 'en', flag: 'US' },
+    { label: 'العربية', value: 'ar', flag: 'SA' },
+    { label: 'Español', value: 'es', flag: 'ES' },
 ]
 
 const _LanguageSelector = ({ className }: CommonProps) => {
@@ -17,6 +20,17 @@ const _LanguageSelector = ({ className }: CommonProps) => {
     const selectLangFlag = useMemo(() => {
         return languageList.find((lang) => lang.value === locale)?.flag
     }, [locale])
+
+    const handleChangeLanguage = (lang: string) => {
+        setLang(lang)
+        i18n.changeLanguage(lang)
+        // Set RTL for Arabic
+        if (lang === 'ar') {
+            document.documentElement.dir = 'rtl'
+        } else {
+            document.documentElement.dir = 'ltr'
+        }
+    }
 
     const selectedLanguage = (
         <div className={classNames(className, 'flex items-center')}>
@@ -35,7 +49,7 @@ const _LanguageSelector = ({ className }: CommonProps) => {
                     key={lang.label}
                     className="justify-between"
                     eventKey={lang.label}
-                    onClick={() => setLang(lang.value)}
+                    onClick={() => handleChangeLanguage(lang.value)}
                 >
                     <span className="flex items-center">
                         <Avatar

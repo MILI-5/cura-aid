@@ -163,18 +163,33 @@ const UploadMedicalReports: React.FC<UploadMedicalReportsProps> = ({ setPopupSta
 				onClose={onDialogClose}
 				closable={true}
 			>
-				<h4 className='text-center mb-5'>Upload Medical Reports</h4>
+				<h4 className='text-center mb-5' id="upload-medical-reports-title">Upload Medical Reports</h4>
 				{
 					successMessage ? <Alert showIcon type='danger' className='mb-2' customIcon={<MdError />}>
-						{successMessage}
+						<span role="alert" aria-live="assertive">{successMessage}</span>
 					</Alert> : <div></div>
 				}
-				<Upload onFileRemove={(files: File[], fileIndex: number) => {
-					const list = [...fileUrls];
-					list.splice(fileIndex, 1);
-					setFileUrl(list);
-				}} beforeUpload={beforeUploadFile} draggable={true} className='w-full' />
-				<Button onClick={handleMedicalReports} loading={buttonLoader} variant='solid' className='w-full !rounded-md'>Upload</Button>
+				<Upload
+					aria-label="Upload medical report files"
+					aria-labelledby="upload-medical-reports-title"
+					onFileRemove={(files: File[], fileIndex: number) => {
+						const list = [...fileUrls];
+						list.splice(fileIndex, 1);
+						setFileUrl(list);
+					}}
+					beforeUpload={beforeUploadFile}
+					draggable={true}
+					className='w-full'
+				/>
+				<Button
+					aria-label="Upload medical reports"
+					onClick={handleMedicalReports}
+					loading={buttonLoader}
+					variant='solid'
+					className='w-full !rounded-md'
+				>
+					Upload
+				</Button>
 			</Dialog>
 		</div>
 	);

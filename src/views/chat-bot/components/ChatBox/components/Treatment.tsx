@@ -1,19 +1,24 @@
 import { Alert } from '@/components/ui';
-import { useUserStore } from '@/store/userStore';
-import { useHcfHomeStore } from '@/views/HCFS/Home/store/hcfHomeStore';
-import React, { useEffect, useRef, useState } from 'react';
+import { useSessionUser } from '@/store/authStore';
+import { useHcfHomeStore } from '@/views/Home/store/hcfHomeStore';
+import React, { useEffect, useRef } from 'react';
 import { BiCalendar, BiCalendarCheck, BiCheckCircle, BiClipboard } from 'react-icons/bi';
 import { BsActivity } from 'react-icons/bs';
 import { FaAngleRight, FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
 import { FiMessageCircle } from 'react-icons/fi';
 import { LuFileSearch } from 'react-icons/lu';
 
-const Treatment = () => {
+// Add prop types
+interface TreatmentProps {
+  activeStep?: number;
+  setActiveStep?: (step: number) => void;
+}
 
-    const scrollRef = useRef(null);
-    const { userDetails } = useUserStore()
+const Treatment: React.FC<TreatmentProps> = ({ activeStep = 0, setActiveStep }) => {
 
-    const [active, setActive] = useState(0)
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const { user } = useSessionUser()
+
     const { claimBarStatus } = useHcfHomeStore()
 
     const steps = [
@@ -47,38 +52,33 @@ const Treatment = () => {
         }
     ];
 
-    const scrollRight = () => {
+    const handleScroll = (amount: number) => {
         if (scrollRef.current) {
-            scrollRef.current.scrollBy({ left: 100, behavior: "smooth" }); // Scrolls 100px to the right
-        }
-    };
-    const scrollLeft = () => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollBy({ left: -100, behavior: "smooth" }); // Scrolls 100px to the right
+            scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
         }
     };
 
     useEffect(() => {
-        if (userDetails?.stage) {
-            const stage = userDetails?.stage.replace('_', ' ')
+        if (user?.stage && setActiveStep) {
+            const stage = user.stage.replace('_', ' ')
                 .split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
             const checkActive = steps.findIndex((data) => data.title == stage);
 
             if (checkActive === -1) {
-                setActive(0)
+                setActiveStep(0)
             } else {
-                setActive(checkActive)
+                setActiveStep(checkActive)
             }
         }
-    }, [userDetails])
+    }, [user, setActiveStep]);
     return (
 
         <div className="bg-white rounded-xl shadow-sm border w-full overflow-x-auto mb-1">
             <div className='flex justify-between w-full items-center px-1'>
                 <div>
-                    <div onClick={scrollLeft} className='flex items-center gap-x-1 text-primary sm:hidden'>
+                    <div onClick={() => handleScroll(-100)} className='flex items-center gap-x-1 text-primary sm:hidden'>
                         <FaArrowLeft />
                     </div>
                 </div>
@@ -86,7 +86,7 @@ const Treatment = () => {
                     Your Treatment Journey
                 </h6>
                 <div className=''>
-                    <div onClick={scrollRight} className='flex items-center gap-x-1 text-primary sm:hidden'>
+                    <div onClick={() => handleScroll(100)} className='flex items-center gap-x-1 text-primary sm:hidden'>
                         <FaArrowRight />
                     </div>
                 </div>
@@ -112,11 +112,12 @@ const Treatment = () => {
                     {steps.map((step, index) => (
                         <div
                             key={index}
-                            className="relative flex flex-col items-center z-1"
+                            className="relative flex flex-col items-center z-1 cursor-pointer"
+                            onClick={() => setActiveStep && setActiveStep(index)}
                         >
                             <div
                                 className={`w-7 h-7  rounded-full flex items-center justify-center 
-            ${index === active
+            ${index === activeStep
                                         ? 'bg-primary text-white'
                                         : 'bg-white border-2 border-primary text-primary'
                                     }
