@@ -1,0 +1,35 @@
+/* src/assets/styles/themes.css */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #ffffff;
+    --text-color: #333333;
+    --button-background: #3498db;
+    --button-color: #ffffff;
+    --card-background: #f9f9f9;
+    --form-border: 1px solid #ccc;
+}
+
+/* Theme 1 */
+.theme1 {
+    --primary-color: #e74c3c;
+    --secondary-color: #8e44ad;
+    --background-color: #ecf0f1;
+    --text-color: #2c3e50;
+    --button-background: #e74c3c;
+    --button-color: #ffffff;
+    --card-background: #ffffff;
+    --form-border: 1px solid #e74c3c;
+}
+
+/* Theme 2 */
+.theme2 {
+    --primary-color: #f39c12;
+    --secondary-color: #d35400;
+    --background-color: #ffffff;
+    --text-color: #34495e;
+    --button-background: #f39c12;
+    --button-color: #ffffff;
+    --card-background: #f9f9f9;
+    --form-border: 1px solid #f39c12;
+}
