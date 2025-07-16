@@ -3,6 +3,10 @@ import { useClinicStore } from '../store/clinicStore';
 import { useSessionUser } from '../store/authStore';
 import NavBar from '../components/shared/NavBar';
 import { motion } from 'framer-motion';
+import DashboardMascot from "@/components/ui/Mascots/DashboardMascot";
+import MachineDashboard from "@/components/ui/StatusIcon/MachineDashboard";
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Float } from '@react-three/drei';
 // If you have a chart library installed, import it here. Otherwise, use placeholder divs for charts.
 
 const mockMetrics = (clinicId: string) => ({
@@ -11,6 +15,49 @@ const mockMetrics = (clinicId: string) => ({
   revenue: clinicId === 'clinic1' ? 15000 : 9000,
   doctors: clinicId === 'clinic1' ? 8 : 5,
 });
+
+// 3D Stethoscope Model
+function Stethoscope3D() {
+  return (
+    <Float speed={2} rotationIntensity={0.7} floatIntensity={1.2}>
+      <group>
+        {/* Tubing */}
+        <mesh position={[0, 0, 0]}>
+          <torusGeometry args={[0.7, 0.08, 16, 100, Math.PI * 1.2]} />
+          <meshStandardMaterial color="#2563eb" />
+        </mesh>
+        {/* Chestpiece */}
+        <mesh position={[0.7, -0.2, 0]}>
+          <cylinderGeometry args={[0.13, 0.13, 0.18, 32]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+        {/* Diaphragm */}
+        <mesh position={[0.7, -0.3, 0]}>
+          <cylinderGeometry args={[0.09, 0.09, 0.05, 32]} />
+          <meshStandardMaterial color="#fff" />
+        </mesh>
+        {/* Eartubes */}
+        <mesh position={[-0.7, 0.2, 0]} rotation={[0, 0, Math.PI / 4]}>
+          <cylinderGeometry args={[0.03, 0.03, 0.5, 16]} />
+          <meshStandardMaterial color="#2563eb" />
+        </mesh>
+        <mesh position={[-0.5, 0.5, 0]} rotation={[0, 0, Math.PI / 2.5]}>
+          <cylinderGeometry args={[0.03, 0.03, 0.3, 16]} />
+          <meshStandardMaterial color="#2563eb" />
+        </mesh>
+        {/* Eartips */}
+        <mesh position={[-0.35, 0.65, 0]}>
+          <sphereGeometry args={[0.05, 16, 16]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+        <mesh position={[-0.65, 0.65, 0]}>
+          <sphereGeometry args={[0.05, 16, 16]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+      </group>
+    </Float>
+  );
+}
 
 const Dashboard: React.FC = () => {
   const { currentClinic } = useClinicStore();
@@ -31,10 +78,89 @@ const Dashboard: React.FC = () => {
     alert('Exported dashboard data (mock)');
   };
 
+  console.log('CREATIVE DASHBOARD RENDERED');
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-green-100 dark:from-gray-900 dark:via-blue-900 dark:to-teal-900 font-sans">
-      <NavBar />
-      <div className="max-w-6xl mx-auto px-4 py-12 mt-8">
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Animated SVG Blob Background */}
+      <motion.svg
+        className="absolute left-0 top-0 w-full h-full z-0 pointer-events-none"
+        viewBox="0 0 1440 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        aria-hidden="true"
+      >
+        <motion.path
+          fill="#bae6fd"
+          fillOpacity="0.7"
+          d="M0,160 C320,320 1120,0 1440,160 L1440,600 L0,600 Z"
+          animate={{
+            y: [0, 10, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 8,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.path
+          fill="#a7f3d0"
+          fillOpacity="0.6"
+          d="M0,320 C400,480 1040,120 1440,320 L1440,600 L0,600 Z"
+          animate={{
+            y: [0, -10, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 10,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.circle
+          cx="1200"
+          cy="100"
+          r="120"
+          fill="#fcd34d"
+          fillOpacity="0.18"
+          animate={{
+            x: [0, 30, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 12,
+            ease: "easeInOut",
+          }}
+        />
+      </motion.svg>
+      {/* Mascot with microinteraction */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0, y: 40 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        whileHover={{ rotate: 8, scale: 1.08 }}
+        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+        className="flex justify-center mt-8 relative z-10"
+      >
+        <DashboardMascot size={160} title="Welcome to your health dashboard!" />
+      </motion.div>
+      {/* 3D Stethoscope Widget */}
+      <div className="flex justify-center mt-4 mb-2 z-10">
+        <div className="w-[180px] h-[180px] bg-transparent rounded-2xl shadow-2xl overflow-hidden">
+          <Canvas camera={{ position: [0, 0.7, 3], fov: 40 }} shadows>
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[5, 10, 5]} intensity={0.7} castShadow />
+            <Stethoscope3D />
+            <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1.2} />
+          </Canvas>
+        </div>
+      </div>
+      {/* Machine Dashboard */}
+      <div className="relative z-10">
+        <MachineDashboard />
+      </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-12 mt-8">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

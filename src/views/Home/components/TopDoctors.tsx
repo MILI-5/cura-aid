@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { CgLock } from 'react-icons/cg';
 import { LuBuilding2 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
+import { GlassCard } from '@/components/ui/Card';
 
 interface TopDoctorsProps {
     hcfData: {
@@ -11,7 +12,7 @@ interface TopDoctorsProps {
 }
 const TopDoctors: React.FC<TopDoctorsProps> = ({ hcfData }) => {
     const navigate = useNavigate();
-    const [doctors, setDoctors] = useState<any>([]);
+    const [doctors, setDoctors] = useState<any[]>([]);
 
     useEffect(() => {
         if (hcfData?.doctors?.length) {
@@ -29,7 +30,7 @@ const TopDoctors: React.FC<TopDoctorsProps> = ({ hcfData }) => {
                 try {
                     const data = await apiGetDoctors({ page: 1, limit, search: '' })
                     if (data?.data) {
-                        setDoctors((prv) => [...prv, ...data.data])
+                        setDoctors((prv: any[]) => [...prv, ...data.data])
                     }
                 } catch (err) {
                     console.log('error', err);
@@ -41,17 +42,17 @@ const TopDoctors: React.FC<TopDoctorsProps> = ({ hcfData }) => {
     }, [doctors])
 
     return (
-        <div className="w-full bg-gradient-to-b py-8">
+        <div className="w-full bg-transparent py-8">
             <div className="max-w-7xl mx-auto px-4">
-                <h1 className="text-2xl md:text-4xl font-bold text-center mb-12">
+                <h1 className="text-2xl md:text-4xl font-bold text-center mb-12 text-white">
                     Top Doctors
                 </h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {doctors.slice(0, 3).map((doctor) => (
-                        <div
+                        <GlassCard
                             key={doctor._id}
-                            className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group p-4"
+                            className="hover:shadow-xl transition-all duration-300 overflow-hidden group p-4"
                         >
                             {/* <div className="relative h-64 overflow-hidden bg-gradient-to-b from-gray-100 to-gray-200">
                                 <img
@@ -66,7 +67,7 @@ const TopDoctors: React.FC<TopDoctorsProps> = ({ hcfData }) => {
 
                             <div className="p-3">
                                 <h2 className="text-xl font-bold text-primary mb-2">{doctor.name}</h2>
-                                <p className="text-sm text-gray-600 mb-4">{doctor.designation || 'Specialist'}</p>
+                                <p className="text-sm text-primary/80 mb-4">{doctor.designation || 'Specialist'}</p>
 
                                 <div className="space-y-3">
                                     <InfoRow
@@ -89,7 +90,7 @@ const TopDoctors: React.FC<TopDoctorsProps> = ({ hcfData }) => {
                                     More details
                                 </button>
                             </div>
-                        </div>
+                        </GlassCard>
                     ))}
                 </div>
 
@@ -106,7 +107,7 @@ const TopDoctors: React.FC<TopDoctorsProps> = ({ hcfData }) => {
     );
 };
 
-const InfoRow = ({ icon, label, value, className = '' }) => (
+const InfoRow: React.FC<{ icon: React.ReactNode; label: string; value: string; className?: string }> = ({ icon, label, value, className = '' }) => (
     <div className="flex items-center text-sm">
         <div className="text-primary/60">{icon}</div>
         <span className="ml-2 text-gray-500">{label}:</span>

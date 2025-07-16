@@ -4,6 +4,7 @@ import 'react-calendar/dist/Calendar.css';
 import { useToast } from '../components/shared/ToastContext';
 import NavBar from '../components/shared/NavBar';
 import { motion } from 'framer-motion';
+import AppointmentMascot from "@/components/ui/Mascots/AppointmentMascot";
 
 interface Appointment {
   id: number;
@@ -236,378 +237,444 @@ const Appointments: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-green-100 dark:from-gray-900 dark:via-blue-900 dark:to-teal-900 font-sans">
-      <NavBar />
-      <div className="max-w-4xl mx-auto px-4 py-12 mt-8">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-4xl font-extrabold text-primary mb-10 tracking-tight drop-shadow-sm flex items-center gap-2"
-        >
-          <span className="inline-block bg-white/60 dark:bg-gray-900/60 rounded-full px-3 py-1 shadow-sm backdrop-blur">📅</span>
-          Appointments
-        </motion.h1>
-        {/* Calendar UI */}
-        <div className="mb-10 flex justify-center">
-          <Calendar
-            onChange={handleCalendarChange}
-            value={calendarDate}
-            tileClassName={tileClassName}
-          />
-        </div>
-        {/* Form Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="glass-card mb-10"
-        >
-          <div className="text-xl font-semibold mb-6 text-primary/90 flex items-center gap-2">
-            {editingId !== null ? 'Edit Appointment' : 'Add Appointment'}
-          </div>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Patient */}
-            <div className="relative">
-              <select
-                id="patient"
-                name="patient"
-                value={form.patient || ''}
-                onChange={handleChange}
-                required
-                className="peer glass-input"
-              >
-                <option value="" disabled hidden></option>
-                {mockPatients.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-              <label htmlFor="patient" className="glass-label">Patient</label>
-            </div>
-            {/* Doctor */}
-            <div className="relative">
-              <select
-                id="doctor"
-                name="doctor"
-                value={form.doctor || ''}
-                onChange={handleChange}
-                required
-                className="peer glass-input"
-              >
-                <option value="" disabled hidden></option>
-                {mockDoctors.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-              <label htmlFor="doctor" className="glass-label">Doctor</label>
-            </div>
-            {/* Date */}
-            <div className="relative">
-              <input
-                id="date"
-                name="date"
-                type="date"
-                value={form.date || ''}
-                onChange={handleChange}
-                required
-                className="peer glass-input"
-                placeholder=" "
-              />
-              <label htmlFor="date" className="glass-label">Date</label>
-            </div>
-            {/* Time */}
-            <div className="relative">
-              <select
-                id="time"
-                name="time"
-                value={form.time || ''}
-                onChange={handleChange}
-                required
-                className="peer glass-input"
-                disabled={!selectedDoctor || !selectedDate}
-              >
-                <option value="" disabled hidden>Select time</option>
-                {availableTimes.map(time => (
-                  <option key={time} value={time}>{time}</option>
-                ))}
-              </select>
-              <label htmlFor="time" className="glass-label">Time</label>
-            </div>
-            {/* Recurrence */}
-            <div className="relative">
-              <select
-                id="recurrence"
-                name="recurrence"
-                value={form.recurrence || 'None'}
-                onChange={handleChange}
-                className="peer glass-input"
-              >
-                <option value="None">No Recurrence</option>
-                <option value="Daily">Daily</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Monthly">Monthly</option>
-              </select>
-              <label htmlFor="recurrence" className="glass-label">Recurrence</label>
-            </div>
-            {/* Status */}
-            <div className="relative">
-              <select
-                id="status"
-                name="status"
-                value={form.status || 'Scheduled'}
-                onChange={handleChange}
-                className="peer glass-input"
-              >
-                <option value="Scheduled">Scheduled</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
-                <option value="No Show">No Show</option>
-              </select>
-              <label htmlFor="status" className="glass-label">Status</label>
-            </div>
-            {/* Time Zone */}
-            <div className="relative">
-              <input
-                id="timeZone"
-                name="timeZone"
-                type="text"
-                value={form.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone}
-                onChange={handleChange}
-                className="peer glass-input"
-                placeholder="Time Zone"
-              />
-              <label htmlFor="timeZone" className="glass-label">Time Zone</label>
-            </div>
-            <button type="submit" className="btn-primary shadow-md">
-              {editingId !== null ? 'Update' : 'Add'} Appointment
-            </button>
-            {editingId !== null && (
-              <button type="button" onClick={() => { setForm({}); setEditingId(null); }} className="btn-secondary">
-                Cancel
-              </button>
-            )}
-          </form>
-        </motion.div>
-        {/* Table Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="bg-white/90 dark:bg-gray-900/90 shadow-glass rounded-2xl p-6 backdrop-blur-md border border-neutral-100 dark:border-neutral-800"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <div className="text-xl font-semibold text-primary/90">Appointment List</div>
-            <input
-              type="text"
-              placeholder="Search by patient..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="glass-input w-full md:w-64"
-              aria-label="Search appointments by patient"
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Animated SVG Blob Background */}
+      <motion.svg
+        className="absolute left-0 top-0 w-full h-full z-0 pointer-events-none"
+        viewBox="0 0 1440 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        aria-hidden="true"
+      >
+        <motion.path
+          fill="#bae6fd"
+          fillOpacity="0.7"
+          d="M0,160 C320,320 1120,0 1440,160 L1440,600 L0,600 Z"
+          animate={{
+            y: [0, 10, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 8,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.path
+          fill="#a7f3d0"
+          fillOpacity="0.6"
+          d="M0,320 C400,480 1040,120 1440,320 L1440,600 L0,600 Z"
+          animate={{
+            y: [0, -10, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 10,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.circle
+          cx="1200"
+          cy="100"
+          r="120"
+          fill="#fcd34d"
+          fillOpacity="0.18"
+          animate={{
+            x: [0, 30, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 12,
+            ease: "easeInOut",
+          }}
+        />
+      </motion.svg>
+      {/* Mascot with microinteraction */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0, y: 40 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        whileHover={{ rotate: 8, scale: 1.08 }}
+        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+        className="flex justify-center mt-8 relative z-10"
+      >
+        <AppointmentMascot size={140} title="Book your appointment!" />
+      </motion.div>
+      {/* Main content below */}
+      <div className="relative z-10">
+        <NavBar />
+        <div className="max-w-4xl mx-auto px-4 py-12 mt-8">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-4xl font-extrabold text-primary mb-10 tracking-tight drop-shadow-sm flex items-center gap-2"
+          >
+            <span className="inline-block bg-white/60 dark:bg-gray-900/60 rounded-full px-3 py-1 shadow-sm backdrop-blur">📅</span>
+            Appointments
+          </motion.h1>
+          {/* Calendar UI */}
+          <div className="mb-10 flex justify-center">
+            <Calendar
+              onChange={handleCalendarChange}
+              value={calendarDate}
+              tileClassName={tileClassName}
             />
           </div>
-          <table className="min-w-full text-left border-separate border-spacing-y-2">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 text-primary/80">Patient</th>
-                <th className="px-4 py-2 text-primary/80">Doctor</th>
-                <th className="px-4 py-2 text-primary/80">Date</th>
-                <th className="px-4 py-2 text-primary/80">Time</th>
-                <th className="px-4 py-2 text-primary/80">Status</th>
-                <th className="px-4 py-2 text-primary/80">Call Status</th>
-                <th className="px-4 py-2 text-primary/80">Reminder</th>
-                <th className="px-4 py-2 text-primary/80">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAppointments.map((appointment, i) => (
-                <motion.tr
-                  key={appointment.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className={i % 2 === 0 ? 'bg-neutral-50 dark:bg-neutral-800/40 transition-colors' : 'transition-colors'}
+          {/* Form Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="glass-card mb-10"
+          >
+            <div className="text-xl font-semibold mb-6 text-primary/90 flex items-center gap-2">
+              {editingId !== null ? 'Edit Appointment' : 'Add Appointment'}
+            </div>
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {/* Patient */}
+              <div className="relative">
+                <select
+                  id="patient"
+                  name="patient"
+                  value={form.patient || ''}
+                  onChange={handleChange}
+                  required
+                  className="peer glass-input"
                 >
-                  <td className="px-4 py-2 rounded-l-xl font-medium">{appointment.patient}</td>
-                  <td className="px-4 py-2">{appointment.doctor}</td>
-                  <td className="px-4 py-2">{appointment.date}</td>
-                  <td className="px-4 py-2">{appointment.time}</td>
-                  <td className="px-4 py-2">{appointment.status}</td>
-                  <td className="px-4 py-2">{appointment.callStatus}</td>
-                  <td className="px-4 py-2">
-                    {appointment.reminderSent ? <span className="badge badge-success">Sent</span> :
-                      <button disabled={reminderLoading === appointment.id} onClick={() => sendReminder(appointment.id)} className="btn-table-edit">{reminderLoading === appointment.id ? 'Sending...' : 'Send'}</button>}
-                  </td>
-                  <td className="px-4 py-2 rounded-r-xl flex gap-2">
-                    <button onClick={() => handleEdit(appointment)} className="btn-table-edit">Edit</button>
-                    <button onClick={() => handleDelete(appointment.id)} className="btn-table-delete">Delete</button>
-                    <button onClick={() => setShowReschedule(appointment)} className="btn-table-edit">Reschedule</button>
-                    <button onClick={() => setShowCancel(appointment)} className="btn-table-delete">Cancel</button>
-                    <button onClick={() => setShowCallLog(appointment)} className="btn-table-edit">View Call Log</button>
-                    <button
-                      className="btn-table-video bg-primary text-white px-3 py-1 rounded"
-                      onClick={() => startCall(appointment)}
-                      disabled={appointment.status === 'Cancelled' || appointment.status === 'Completed'}
-                    >
-                      Join Video Call
-                    </button>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </motion.div>
-        {/* Delete Confirmation Dialog */}
-        {deleteId !== null && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-            <div className="glass-card w-80 p-8 animate-fade-in">
-              <div className="text-xl font-bold mb-4 text-red-600 flex items-center gap-2">
-                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="inline-block"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                Confirm Delete
+                  <option value="" disabled hidden></option>
+                  {mockPatients.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+                <label htmlFor="patient" className="glass-label">Patient</label>
               </div>
-              <div className="mb-6 text-gray-700 dark:text-gray-300">Are you sure you want to delete this appointment?</div>
-              <div className="flex justify-end gap-2">
-                <button onClick={() => setDeleteId(null)} className="btn-secondary">Cancel</button>
-                <button onClick={confirmDelete} className="btn-danger">Delete</button>
+              {/* Doctor */}
+              <div className="relative">
+                <select
+                  id="doctor"
+                  name="doctor"
+                  value={form.doctor || ''}
+                  onChange={handleChange}
+                  required
+                  className="peer glass-input"
+                >
+                  <option value="" disabled hidden></option>
+                  {mockDoctors.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+                <label htmlFor="doctor" className="glass-label">Doctor</label>
               </div>
-            </div>
-          </div>
-        )}
-        {/* Video Call Modal */}
-        {videoRoom && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 w-full max-w-2xl shadow-lg relative">
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
-                onClick={() => setVideoRoom(null)}
-                aria-label="Close video call"
-              >
-                &times;
-              </button>
-              <h3 className="text-lg font-bold mb-2">Video Call (Jitsi)</h3>
-              <div className="rounded border overflow-hidden" style={{ height: 500 }}>
-                <iframe
-                  title="Jitsi Video Call"
-                  src={`https://meet.jit.si/${encodeURIComponent(videoRoom)}`}
-                  allow="camera; microphone; fullscreen; display-capture"
-                  style={{ width: '100%', height: '100%', border: 0 }}
+              {/* Date */}
+              <div className="relative">
+                <input
+                  id="date"
+                  name="date"
+                  type="date"
+                  value={form.date || ''}
+                  onChange={handleChange}
+                  required
+                  className="peer glass-input"
+                  placeholder=" "
                 />
+                <label htmlFor="date" className="glass-label">Date</label>
               </div>
+              {/* Time */}
+              <div className="relative">
+                <select
+                  id="time"
+                  name="time"
+                  value={form.time || ''}
+                  onChange={handleChange}
+                  required
+                  className="peer glass-input"
+                  disabled={!selectedDoctor || !selectedDate}
+                >
+                  <option value="" disabled hidden>Select time</option>
+                  {availableTimes.map(time => (
+                    <option key={time} value={time}>{time}</option>
+                  ))}
+                </select>
+                <label htmlFor="time" className="glass-label">Time</label>
+              </div>
+              {/* Recurrence */}
+              <div className="relative">
+                <select
+                  id="recurrence"
+                  name="recurrence"
+                  value={form.recurrence || 'None'}
+                  onChange={handleChange}
+                  className="peer glass-input"
+                >
+                  <option value="None">No Recurrence</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                </select>
+                <label htmlFor="recurrence" className="glass-label">Recurrence</label>
+              </div>
+              {/* Status */}
+              <div className="relative">
+                <select
+                  id="status"
+                  name="status"
+                  value={form.status || 'Scheduled'}
+                  onChange={handleChange}
+                  className="peer glass-input"
+                >
+                  <option value="Scheduled">Scheduled</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                  <option value="No Show">No Show</option>
+                </select>
+                <label htmlFor="status" className="glass-label">Status</label>
+              </div>
+              {/* Time Zone */}
+              <div className="relative">
+                <input
+                  id="timeZone"
+                  name="timeZone"
+                  type="text"
+                  value={form.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone}
+                  onChange={handleChange}
+                  className="peer glass-input"
+                  placeholder="Time Zone"
+                />
+                <label htmlFor="timeZone" className="glass-label">Time Zone</label>
+              </div>
+              <button type="submit" className="btn-primary shadow-md">
+                {editingId !== null ? 'Update' : 'Add'} Appointment
+              </button>
+              {editingId !== null && (
+                <button type="button" onClick={() => { setForm({}); setEditingId(null); }} className="btn-secondary">
+                  Cancel
+                </button>
+              )}
+            </form>
+          </motion.div>
+          {/* Table Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="bg-white/90 dark:bg-gray-900/90 shadow-glass rounded-2xl p-6 backdrop-blur-md border border-neutral-100 dark:border-neutral-800"
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div className="text-xl font-semibold text-primary/90">Appointment List</div>
+              <input
+                type="text"
+                placeholder="Search by patient..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="glass-input w-full md:w-64"
+                aria-label="Search appointments by patient"
+              />
             </div>
-          </div>
-        )}
-        {/* Reschedule Modal */}
-        {showReschedule && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-            <div className="glass-card w-full max-w-md p-6 animate-fade-in">
-              <h3 className="text-xl font-bold mb-4 text-primary">Reschedule Appointment</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                handleReschedule(showReschedule, rescheduleFields.newDate, rescheduleFields.newTime, rescheduleFields.reason);
-                setRescheduleFields({ newDate: '', newTime: '', reason: '' });
-              }} className="grid grid-cols-1 gap-4">
-                <div className="relative">
-                  <input
-                    type="date"
-                    name="newDate"
-                    value={rescheduleFields.newDate}
-                    onChange={e => setRescheduleFields(f => ({ ...f, newDate: e.target.value }))}
-                    required
-                    className="peer glass-input"
-                  />
-                  <label htmlFor="newDate" className="glass-label">New Date</label>
-                </div>
-                <div className="relative">
-                  <select
-                    id="newTime"
-                    name="newTime"
-                    value={rescheduleFields.newTime}
-                    onChange={e => setRescheduleFields(f => ({ ...f, newTime: e.target.value }))}
-                    required
-                    className="peer glass-input"
+            <table className="min-w-full text-left border-separate border-spacing-y-2">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-primary/80">Patient</th>
+                  <th className="px-4 py-2 text-primary/80">Doctor</th>
+                  <th className="px-4 py-2 text-primary/80">Date</th>
+                  <th className="px-4 py-2 text-primary/80">Time</th>
+                  <th className="px-4 py-2 text-primary/80">Status</th>
+                  <th className="px-4 py-2 text-primary/80">Call Status</th>
+                  <th className="px-4 py-2 text-primary/80">Reminder</th>
+                  <th className="px-4 py-2 text-primary/80">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAppointments.map((appointment, i) => (
+                  <motion.tr
+                    key={appointment.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.05 }}
+                    className={i % 2 === 0 ? 'bg-neutral-50 dark:bg-neutral-800/40 transition-colors' : 'transition-colors'}
                   >
-                    <option value="" disabled hidden>Select time</option>
-                    {availableTimes.map(time => (
-                      <option key={time} value={time}>{time}</option>
-                    ))}
-                  </select>
-                  <label htmlFor="newTime" className="glass-label">New Time</label>
+                    <td className="px-4 py-2 rounded-l-xl font-medium">{appointment.patient}</td>
+                    <td className="px-4 py-2">{appointment.doctor}</td>
+                    <td className="px-4 py-2">{appointment.date}</td>
+                    <td className="px-4 py-2">{appointment.time}</td>
+                    <td className="px-4 py-2">{appointment.status}</td>
+                    <td className="px-4 py-2">{appointment.callStatus}</td>
+                    <td className="px-4 py-2">
+                      {appointment.reminderSent ? <span className="badge badge-success">Sent</span> :
+                        <button disabled={reminderLoading === appointment.id} onClick={() => sendReminder(appointment.id)} className="btn-table-edit">{reminderLoading === appointment.id ? 'Sending...' : 'Send'}</button>}
+                    </td>
+                    <td className="px-4 py-2 rounded-r-xl flex gap-2">
+                      <button onClick={() => handleEdit(appointment)} className="btn-table-edit">Edit</button>
+                      <button onClick={() => handleDelete(appointment.id)} className="btn-table-delete">Delete</button>
+                      <button onClick={() => setShowReschedule(appointment)} className="btn-table-edit">Reschedule</button>
+                      <button onClick={() => setShowCancel(appointment)} className="btn-table-delete">Cancel</button>
+                      <button onClick={() => setShowCallLog(appointment)} className="btn-table-edit">View Call Log</button>
+                      <button
+                        className="btn-table-video bg-primary text-white px-3 py-1 rounded"
+                        onClick={() => startCall(appointment)}
+                        disabled={appointment.status === 'Cancelled' || appointment.status === 'Completed'}
+                      >
+                        Join Video Call
+                      </button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </motion.div>
+          {/* Delete Confirmation Dialog */}
+          {deleteId !== null && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+              <div className="glass-card w-80 p-8 animate-fade-in">
+                <div className="text-xl font-bold mb-4 text-red-600 flex items-center gap-2">
+                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="inline-block"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                  Confirm Delete
                 </div>
-                <div className="relative">
-                  <textarea
-                    id="reason"
-                    name="reason"
-                    value={rescheduleFields.reason}
-                    onChange={e => setRescheduleFields(f => ({ ...f, reason: e.target.value }))}
-                    rows={3}
-                    className="peer glass-input"
-                    placeholder="Reason for rescheduling"
-                  />
-                  <label htmlFor="reason" className="glass-label">Reason</label>
+                <div className="mb-6 text-gray-700 dark:text-gray-300">Are you sure you want to delete this appointment?</div>
+                <div className="flex justify-end gap-2">
+                  <button onClick={() => setDeleteId(null)} className="btn-secondary">Cancel</button>
+                  <button onClick={confirmDelete} className="btn-danger">Delete</button>
                 </div>
-                <button type="submit" className="btn-primary">Reschedule</button>
-                <button type="button" onClick={() => { setShowReschedule(null); setRescheduleFields({ newDate: '', newTime: '', reason: '' }); }} className="btn-secondary">Cancel</button>
-              </form>
+              </div>
             </div>
-          </div>
-        )}
-        {/* Cancel Modal */}
-        {showCancel && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-            <div className="glass-card w-full max-w-md p-6 animate-fade-in">
-              <h3 className="text-xl font-bold mb-4 text-red-600">Cancel Appointment</h3>
-              <p className="mb-4 text-gray-700 dark:text-gray-300">Are you sure you want to cancel this appointment?</p>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                handleCancel(showCancel, cancelReason);
-                setCancelReason('');
-              }} className="grid grid-cols-1 gap-4">
-                <div className="relative">
-                  <textarea
-                    id="cancelReason"
-                    name="cancelReason"
-                    value={cancelReason}
-                    onChange={e => setCancelReason(e.target.value)}
-                    rows={3}
-                    className="peer glass-input"
-                    placeholder="Reason for cancellation"
+          )}
+          {/* Video Call Modal */}
+          {videoRoom && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+              <div className="bg-white dark:bg-gray-900 rounded-lg p-4 w-full max-w-2xl shadow-lg relative">
+                <button
+                  className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
+                  onClick={() => setVideoRoom(null)}
+                  aria-label="Close video call"
+                >
+                  &times;
+                </button>
+                <h3 className="text-lg font-bold mb-2">Video Call (Jitsi)</h3>
+                <div className="rounded border overflow-hidden" style={{ height: 500 }}>
+                  <iframe
+                    title="Jitsi Video Call"
+                    src={`https://meet.jit.si/${encodeURIComponent(videoRoom)}`}
+                    allow="camera; microphone; fullscreen; display-capture"
+                    style={{ width: '100%', height: '100%', border: 0 }}
                   />
-                  <label htmlFor="cancelReason" className="glass-label">Reason</label>
                 </div>
-                <button type="submit" className="btn-danger">Cancel Appointment</button>
-                <button type="button" onClick={() => { setShowCancel(null); setCancelReason(''); }} className="btn-secondary">Cancel</button>
-              </form>
+              </div>
             </div>
-          </div>
-        )}
-        {/* Call Log Modal */}
-        {showCallLog && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-            <div className="glass-card w-full max-w-2xl p-6 animate-fade-in">
-              <h3 className="text-xl font-bold mb-4 text-primary">Call Log for {showCallLog.patient}</h3>
-              <div className="overflow-y-auto max-h-full" style={{ maxHeight: '70vh' }}>
-                <table className="min-w-full text-left border-separate border-spacing-y-2">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-2 text-primary/80">Event</th>
-                      <th className="px-4 py-2 text-primary/80">User</th>
-                      <th className="px-4 py-2 text-primary/80">Timestamp</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {showCallLog.callLog?.map((log, i) => (
-                      <tr key={i} className={i % 2 === 0 ? 'bg-neutral-50 dark:bg-neutral-800/40' : ''}>
-                        <td className="px-4 py-2">{log.event}</td>
-                        <td className="px-4 py-2">{log.user}</td>
-                        <td className="px-4 py-2">{new Date(log.timestamp).toLocaleString()}</td>
+          )}
+          {/* Reschedule Modal */}
+          {showReschedule && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+              <div className="glass-card w-full max-w-md p-6 animate-fade-in">
+                <h3 className="text-xl font-bold mb-4 text-primary">Reschedule Appointment</h3>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleReschedule(showReschedule, rescheduleFields.newDate, rescheduleFields.newTime, rescheduleFields.reason);
+                  setRescheduleFields({ newDate: '', newTime: '', reason: '' });
+                }} className="grid grid-cols-1 gap-4">
+                  <div className="relative">
+                    <input
+                      type="date"
+                      name="newDate"
+                      value={rescheduleFields.newDate}
+                      onChange={e => setRescheduleFields(f => ({ ...f, newDate: e.target.value }))}
+                      required
+                      className="peer glass-input"
+                    />
+                    <label htmlFor="newDate" className="glass-label">New Date</label>
+                  </div>
+                  <div className="relative">
+                    <select
+                      id="newTime"
+                      name="newTime"
+                      value={rescheduleFields.newTime}
+                      onChange={e => setRescheduleFields(f => ({ ...f, newTime: e.target.value }))}
+                      required
+                      className="peer glass-input"
+                    >
+                      <option value="" disabled hidden>Select time</option>
+                      {availableTimes.map(time => (
+                        <option key={time} value={time}>{time}</option>
+                      ))}
+                    </select>
+                    <label htmlFor="newTime" className="glass-label">New Time</label>
+                  </div>
+                  <div className="relative">
+                    <textarea
+                      id="reason"
+                      name="reason"
+                      value={rescheduleFields.reason}
+                      onChange={e => setRescheduleFields(f => ({ ...f, reason: e.target.value }))}
+                      rows={3}
+                      className="peer glass-input"
+                      placeholder="Reason for rescheduling"
+                    />
+                    <label htmlFor="reason" className="glass-label">Reason</label>
+                  </div>
+                  <button type="submit" className="btn-primary">Reschedule</button>
+                  <button type="button" onClick={() => { setShowReschedule(null); setRescheduleFields({ newDate: '', newTime: '', reason: '' }); }} className="btn-secondary">Cancel</button>
+                </form>
+              </div>
+            </div>
+          )}
+          {/* Cancel Modal */}
+          {showCancel && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+              <div className="glass-card w-full max-w-md p-6 animate-fade-in">
+                <h3 className="text-xl font-bold mb-4 text-red-600">Cancel Appointment</h3>
+                <p className="mb-4 text-gray-700 dark:text-gray-300">Are you sure you want to cancel this appointment?</p>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCancel(showCancel, cancelReason);
+                  setCancelReason('');
+                }} className="grid grid-cols-1 gap-4">
+                  <div className="relative">
+                    <textarea
+                      id="cancelReason"
+                      name="cancelReason"
+                      value={cancelReason}
+                      onChange={e => setCancelReason(e.target.value)}
+                      rows={3}
+                      className="peer glass-input"
+                      placeholder="Reason for cancellation"
+                    />
+                    <label htmlFor="cancelReason" className="glass-label">Reason</label>
+                  </div>
+                  <button type="submit" className="btn-danger">Cancel Appointment</button>
+                  <button type="button" onClick={() => { setShowCancel(null); setCancelReason(''); }} className="btn-secondary">Cancel</button>
+                </form>
+              </div>
+            </div>
+          )}
+          {/* Call Log Modal */}
+          {showCallLog && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+              <div className="glass-card w-full max-w-2xl p-6 animate-fade-in">
+                <h3 className="text-xl font-bold mb-4 text-primary">Call Log for {showCallLog.patient}</h3>
+                <div className="overflow-y-auto max-h-full" style={{ maxHeight: '70vh' }}>
+                  <table className="min-w-full text-left border-separate border-spacing-y-2">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2 text-primary/80">Event</th>
+                        <th className="px-4 py-2 text-primary/80">User</th>
+                        <th className="px-4 py-2 text-primary/80">Timestamp</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button onClick={() => setShowCallLog(null)} className="btn-secondary">Close</button>
+                    </thead>
+                    <tbody>
+                      {showCallLog.callLog?.map((log, i) => (
+                        <tr key={i} className={i % 2 === 0 ? 'bg-neutral-50 dark:bg-neutral-800/40' : ''}>
+                          <td className="px-4 py-2">{log.event}</td>
+                          <td className="px-4 py-2">{log.user}</td>
+                          <td className="px-4 py-2">{new Date(log.timestamp).toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button onClick={() => setShowCallLog(null)} className="btn-secondary">Close</button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

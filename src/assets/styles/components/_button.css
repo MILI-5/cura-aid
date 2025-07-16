@@ -5,3 +5,7 @@
 .button-press-feedback {
 	@apply transition-transform active:scale-[0.98];
 }
+
+.button:focus-visible {
+  @apply ring-2 ring-primary ring-offset-2 outline-none;
+}

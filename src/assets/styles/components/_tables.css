@@ -1,5 +1,5 @@
 .table-default {
-  @apply table-auto min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+  @apply table-auto min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-2xl overflow-hidden shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-md transition-all duration-200;
 
   > thead {
 
@@ -27,6 +27,18 @@
       }
     }
   }
+}
+
+.table-default > tbody > tr {
+  @apply transition-all duration-200;
+}
+
+.table-default > tbody > tr:hover {
+  @apply bg-primary/10 scale-[1.01] shadow-lg;
+}
+
+.table-default > tbody > tr.selected, .table-default > tbody > tr.active {
+  @apply bg-gradient-to-r from-primary/20 to-secondary/10 shadow-2xl;
 }
 
 .table-flex {

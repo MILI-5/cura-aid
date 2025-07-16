@@ -12,9 +12,26 @@ import Settings from './views/Settings';
 import Contact from './views/Contact';
 import { ToastProvider } from './components/shared/ToastContext';
 import Breadcrumbs from './components/shared/Breadcrumbs';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import Logo from './components/template/Logo';
 import HealthInsights from './views/HealthInsights';
+import ThreeDemo from './components/ui/ThreeDemo';
+import AnimatedLanding from './components/ui/AnimatedLanding';
+import Doctors from './views/Doctors';
+import Inpatient from './views/Inpatient';
+import Pharmacy from './views/Pharmacy';
+import Lab from './views/Lab';
+import Portal from './views/Portal';
+import Telemedicine from './views/Telemedicine';
+import Inventory from './views/Inventory';
+import Notifications from './views/Notifications';
+import Insurance from './views/Insurance';
+import Branches from './views/Branches';
+import Outpatient from './views/Outpatient';
+import Surgery from './views/Surgery';
+import Ambulance from './views/Ambulance';
+import Bloodbank from './views/Bloodbank';
+import Feedback from './views/Feedback';
 
 // Mock tenants
 const tenants = [
@@ -26,31 +43,55 @@ const tenants = [
 export const TenantContext = createContext({ tenant: tenants[0], setTenant: (t: any) => {} });
 
 const SplashScreen = ({ show, theme }: { show: boolean; theme: 'light' | 'dark' }) => (
-  <AnimatePresence>
-    {show && (
-      <motion.div
-        className={`fixed inset-0 flex items-center justify-center z-[9999] transition-colors duration-500 ${theme === 'dark' ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-teal-900' : 'bg-gradient-to-br from-blue-100 via-teal-100 to-neutral-50'}`}
-        initial={{ opacity: 1 }}
-        exit={{ opacity: 0, transition: { duration: 0.6 } }}
-        aria-label="Loading"
-        role="status"
-      >
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-        >
-          <Logo type="full" mode={theme} logoWidth={160} imgClass="drop-shadow-xl" />
-        </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
+  show ? (
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-[9999] transition-colors duration-500 ${theme === 'dark' ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-teal-900' : 'bg-gradient-to-br from-blue-100 via-teal-100 to-neutral-50'}`}
+      aria-label="Loading"
+      role="status"
+    >
+      <div>
+        <Logo type="full" mode={theme} logoWidth={160} imgClass="drop-shadow-xl" />
+      </div>
+    </div>
+  ) : null
 );
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <Routes location={location} key={location.pathname}>
+      <Route path="/" element={<div><AnimatedLanding /></div>} />
+      <Route path="/doctors" element={<div><Doctors /></div>} />
+      <Route path="/inpatient" element={<div><Inpatient /></div>} />
+      <Route path="/pharmacy" element={<div><Pharmacy /></div>} />
+      <Route path="/lab" element={<div><Lab /></div>} />
+      <Route path="/portal" element={<div><Portal /></div>} />
+      <Route path="/telemedicine" element={<div><Telemedicine /></div>} />
+      <Route path="/inventory" element={<div><Inventory /></div>} />
+      <Route path="/notifications" element={<div><Notifications /></div>} />
+      <Route path="/insurance" element={<div><Insurance /></div>} />
+      <Route path="/branches" element={<div><Branches /></div>} />
+      <Route path="/outpatient" element={<div><Outpatient /></div>} />
+      <Route path="/surgery" element={<div><Surgery /></div>} />
+      <Route path="/ambulance" element={<div><Ambulance /></div>} />
+      <Route path="/bloodbank" element={<div><Bloodbank /></div>} />
+      <Route path="/feedback" element={<div><Feedback /></div>} />
+      <Route path="/themes" element={<div><Themes /></div>} />
+      <Route path="/profile" element={<div><Profile /></div>} />
+      <Route path="/dashboard" element={<div><Dashboard /></div>} />
+      <Route path="/customizer" element={<div><ThemeCustomizer /></div>} />
+      <Route path="/settings" element={<div><Settings /></div>} />
+      <Route path="/contact" element={<div><Contact /></div>} />
+      <Route path="/health-insights" element={<div><HealthInsights /></div>} />
+    </Routes>
+  );
+};
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [tenant, setTenant] = useState(tenants[0]);
+  const location = useLocation();
 
   useEffect(() => {
     // Detect theme from ThemeProvider or localStorage
@@ -71,8 +112,7 @@ const App: React.FC = () => {
   }, [tenant]);
 
     return (
-        <Router>
-            <ThemeProvider>
+        <ThemeProvider>
         <ToastProvider>
           <TenantContext.Provider value={{ tenant, setTenant }}>
             <div style={{ minHeight: '100vh', background: `linear-gradient(135deg, ${tenant.color}22 0%, #fff 100%)` }}>
@@ -105,16 +145,7 @@ const App: React.FC = () => {
                   <>
                     <FloatingSearchModal />
                     <Breadcrumbs />
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/themes" element={<Themes />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/customizer" element={<ThemeCustomizer />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/health-insights" element={<HealthInsights />} />
-                    </Routes>
+                    <AnimatedRoutes />
                   </>
                 )}
               </div>
@@ -122,7 +153,6 @@ const App: React.FC = () => {
           </TenantContext.Provider>
         </ToastProvider>
             </ThemeProvider>
-        </Router>
     );
 };
 

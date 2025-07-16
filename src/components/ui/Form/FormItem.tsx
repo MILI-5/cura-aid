@@ -121,6 +121,8 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>((props, ref) => {
                                 animate={enterStyle}
                                 exit={exitStyle}
                                 transition={{ duration: 0.15, type: 'tween' }}
+                                aria-live="assertive"
+                                role="alert"
                             >
                                 {errorMessage}
                             </motion.div>

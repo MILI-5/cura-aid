@@ -5,7 +5,7 @@ import type { ButtonProps } from '@/components/ui/Button'
 type EllipsisButtonProps = ButtonProps
 
 const EllipsisButton = (props: EllipsisButtonProps) => {
-    const { shape = 'circle', variant = 'plain', size = 'xs' } = props
+    const { shape = 'circle', variant = 'plain', size = 'xs', 'aria-label': ariaLabel, ...rest } = props
 
     return (
         <Button
@@ -13,7 +13,8 @@ const EllipsisButton = (props: EllipsisButtonProps) => {
             variant={variant}
             size={size}
             icon={<TbDots />}
-            {...props}
+            aria-label={ariaLabel || 'More options'}
+            {...rest}
         />
     )
 }

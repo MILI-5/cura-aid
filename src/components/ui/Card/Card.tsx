@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import { useConfig } from '../ConfigProvider'
 import type { CommonProps } from '../@types/common'
 import type { ReactNode, ComponentPropsWithRef, MouseEvent } from 'react'
+import { motion } from 'framer-motion';
 
 type CardHeader = {
     content?: string | ReactNode
@@ -92,13 +93,19 @@ const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
         onClick?.(e)
     }
 
+    // Remove onDrag, onAnimation, and related events from rest to avoid type conflict with motion.div
+    const { onDrag, onDragEnd, onDragStart, onDragOver, onAnimationStart, onAnimationEnd, onTransitionEnd, ...motionRest } = rest;
     return (
-        <div
+        <motion.div
             ref={ref}
             className={cardClass}
             role="presentation"
             onClick={handleClick}
-            {...rest}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: clickable ? 1.03 : 1, boxShadow: clickable ? '0 4px 24px rgba(56,189,248,0.12)' : undefined }}
+            transition={{ duration: 0.5 }}
+            {...motionRest}
         >
             {headerProps.content && (
                 <div className={cardHeaderClass}>
@@ -110,7 +117,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
             {footerProps.content && (
                 <div className={cardFooterClass}>{footerProps.content}</div>
             )}
-        </div>
+        </motion.div>
     )
 })
 

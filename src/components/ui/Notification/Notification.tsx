@@ -68,6 +68,8 @@ const Notification = forwardRef<HTMLDivElement, NotificationProps>(
                 {...rest}
                 className={notificationClass}
                 style={{ width: width, ...style }}
+                aria-live="assertive"
+                role="alert"
             >
                 <div
                     className={classNames(

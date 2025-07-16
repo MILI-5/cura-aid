@@ -25,3 +25,47 @@
 .menu-transparent {
   @apply bg-transparent;
 }
+
+.horizontal-menu-link {
+  @apply px-5 py-2 rounded-full font-semibold text-base text-primary bg-white/60 dark:bg-gray-900/60 shadow-md backdrop-blur-md transition-all duration-200 cursor-pointer relative;
+  border: 1.5px solid var(--primary-subtle);
+  margin: 0 0.25rem;
+}
+.horizontal-menu-link:hover, .horizontal-menu-link:focus {
+  @apply bg-primary text-white shadow-lg scale-105;
+  border-color: var(--primary);
+}
+.horizontal-menu-link.active {
+  @apply bg-primary text-white shadow-xl;
+  border-color: var(--primary-deep);
+}
+.horizontal-menu-link::after {
+  content: '';
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  margin-top: 0.25rem;
+}
+.horizontal-menu-link:hover::after, .horizontal-menu-link.active::after {
+  transform: scaleX(1);
+}
+
+.horizontal-menu-dropdown {
+  @apply rounded-2xl shadow-2xl bg-white/90 dark:bg-gray-900/90 border border-primary/10 dark:border-primary/20 p-2 min-w-[180px] backdrop-blur-md;
+}
+
+/* Sidebar styles */
+.side-nav-link {
+  @apply flex items-center gap-3 px-4 py-2 rounded-full font-semibold text-base text-gray-700 dark:text-gray-200 transition-all duration-200 cursor-pointer relative;
+  margin: 0.25rem 0;
+}
+.side-nav-link:hover, .side-nav-link:focus {
+  @apply bg-primary/10 text-primary shadow-md scale-105;
+}
+.side-nav-link.active {
+  @apply bg-gradient-to-r from-primary to-secondary text-white shadow-xl;
+  box-shadow: 0 0 0 4px var(--primary-subtle);
+}

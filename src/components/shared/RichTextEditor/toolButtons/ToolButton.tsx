@@ -7,7 +7,7 @@ export type ToolButtonProps = ComponentProps<'button'> & {
 }
 
 const ToolButton = (props: ToolButtonProps) => {
-    const { className, disabled, active, ...rest } = props
+    const { className, disabled, active, 'aria-label': ariaLabel, ...rest } = props
 
     return (
         <button
@@ -19,6 +19,7 @@ const ToolButton = (props: ToolButtonProps) => {
             )}
             type="button"
             disabled={disabled}
+            aria-label={ariaLabel || 'Editor tool button'}
             {...rest}
         />
     )

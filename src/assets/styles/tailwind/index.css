@@ -2,102 +2,128 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@700&family=Inter:wght@400;700&display=swap');
+
 @layer base {
 	:root {
 		--neutral: #ffffff;
-		--primary: #2a85ff;
-		--primary-deep: #0069f6;
-		--primary-mild: #4996ff;
-		--primary-subtle: #2a85ff1a;
+		--primary: #1ca7ec; /* Healthcare blue */
+		--primary-deep: #0077b6;
+		--primary-mild: #48cae4;
+		--primary-subtle: #caf0f8;
+		--secondary: #43e97b; /* Healthcare green */
+		--secondary-deep: #38b000;
+		--secondary-mild: #90ee90;
+		--secondary-subtle: #e0fbe0;
 		--error: #ff6a55;
 		--error-subtle: #ff6a551a;
 		--success: #10b981;
 		--success-subtle: #05eb7624;
-		--info: #2a85ff;
-		--info-subtle: #2a85ff1a;
+		--info: #1ca7ec;
+		--info-subtle: #caf0f8;
 		--warning: #f59e0b;
 		--warning-subtle: #ffd40045;
-		--gray-50: #fafafa;
-		--gray-100: #f5f5f5;
-		--gray-200: #e5e5e5;
-		--gray-300: #d4d4d4;
-		--gray-400: #a3a3a3;
-		--gray-500: #737373;
-		--gray-600: #525252;
-		--gray-700: #404040;
-		--gray-800: #262626;
-		--gray-900: #171717;
-		--gray-950: #0a0a0a;
+		--gray-50: #f8fafc;
+		--gray-100: #f1f5f9;
+		--gray-200: #e2e8f0;
+		--gray-300: #cbd5e1;
+		--gray-400: #94a3b8;
+		--gray-500: #64748b;
+		--gray-600: #475569;
+		--gray-700: #334155;
+		--gray-800: #1e293b;
+		--gray-900: #0f172a;
+		--gray-950: #020617;
 	}
 
 	.dark {
-		--neutral: #ffffff;
-		--primary: #2a85ff;
-		--primary-deep: #0069f6;
-		--primary-mild: #4996ff;
-		--primary-subtle: #2a85ff1a;
+		--neutral: #0f172a;
+		--primary: #1ca7ec;
+		--primary-deep: #0077b6;
+		--primary-mild: #48cae4;
+		--primary-subtle: #caf0f8;
+		--secondary: #43e97b;
+		--secondary-deep: #38b000;
+		--secondary-mild: #90ee90;
+		--secondary-subtle: #e0fbe0;
 		--error: #ff6a55;
-		--error-subtle: #ff6a551a; 
+		--error-subtle: #ff6a551a;
 		--success: #10b981;
 		--success-subtle: #05eb7624;
-		--info: #2a85ff;
-		--info-subtle: #2a85ff1a;
+		--info: #1ca7ec;
+		--info-subtle: #caf0f8;
 		--warning: #f59e0b;
 		--warning-subtle: #ffd40045;
-		--gray-50: #fafafa;
-		--gray-100: #f5f5f5;
-		--gray-200: #e5e5e5;
-		--gray-300: #d4d4d4;
-		--gray-400: #a3a3a3;
-		--gray-500: #737373;
-		--gray-600: #525252;
-		--gray-700: #404040;
-		--gray-800: #262626;
-		--gray-900: #171717;
-		--gray-950: #0a0a0a;
+		--gray-50: #f8fafc;
+		--gray-100: #f1f5f9;
+		--gray-200: #e2e8f0;
+		--gray-300: #cbd5e1;
+		--gray-400: #94a3b8;
+		--gray-500: #64748b;
+		--gray-600: #475569;
+		--gray-700: #334155;
+		--gray-800: #1e293b;
+		--gray-900: #0f172a;
+		--gray-950: #020617;
 	}
 
-
 	body {
-		@apply text-gray-500 dark:text-gray-400 text-sm bg-gray-100 dark:bg-gray-950 leading-normal font-medium;
+		@apply text-gray-600 dark:text-gray-300 text-base bg-gray-50 dark:bg-gray-900 leading-relaxed font-medium;
 		-webkit-font-smoothing: antialiased;
+		font-family: 'Inter', 'Nunito', 'Fredoka', 'Poppins', ui-sans-serif, system-ui;
 	}
 
 	h1,
 	.h1 {
-		@apply text-4xl font-bold text-gray-900 dark:text-gray-100;
+		@apply text-5xl font-extrabold mb-4;
+		font-family: 'Fredoka', 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui;
+		color: var(--primary);
+	}
+	.dark h1,
+	.dark .h1 {
+		color: var(--primary-mild);
 	}
 
 	h2,
 	.h2 {
-		@apply text-3xl font-bold text-gray-900 dark:text-gray-100;
+		@apply text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3;
+		font-family: 'Fredoka', 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui;
 	}
 
 	h3,
 	.h3 {
-		@apply text-2xl font-bold text-gray-900 dark:text-gray-100;
+		@apply text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2;
+		font-family: 'Fredoka', 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui;
 	}
 
 	h4,
 	.h4 {
-		@apply text-xl font-bold text-gray-900 dark:text-gray-100;
+		@apply text-xl font-semibold text-gray-900 dark:text-gray-100;
+		font-family: 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui;
 	}
 
 	h5,
 	.h5 {
-		@apply text-lg font-bold text-gray-900 dark:text-gray-100;
+		@apply text-lg font-semibold text-gray-900 dark:text-gray-100;
+		font-family: 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui;
 	}
 
 	h6,
 	.h6 {
 		@apply text-base font-semibold text-gray-900 dark:text-gray-100;
+		font-family: 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui;
 	}
 
 	hr {
-		@apply border-gray-200 dark:border-gray-600;
+		@apply border-gray-200 dark:border-gray-700;
 	}
 
 	.heading-text {
-		@apply text-gray-900 dark:text-gray-100;
+		@apply font-bold;
+		font-family: 'Fredoka', 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui;
+		color: var(--primary);
+	}
+	.dark .heading-text {
+		color: var(--primary-mild);
 	}
 }

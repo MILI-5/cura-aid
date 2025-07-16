@@ -60,7 +60,7 @@ const CollapsedItem = ({
                 <Dropdown.Item>
                     {nav.path ? (
                         <Link
-                            className="h-full w-full flex items-center outline-none"
+                            className="side-nav-link h-full w-full flex items-center"
                             to={nav.path}
                             target={nav.isExternalLink ? '_blank' : ''}
                             onClick={() =>
@@ -102,7 +102,7 @@ const DefaultItem = (props: DefaultItemProps) => {
             >
                 <Link
                     to={nav.path}
-                    className="flex items-center gap-2 h-full w-full"
+                    className="side-nav-link flex items-center gap-2 h-full w-full"
                     target={nav.isExternalLink ? '_blank' : ''}
                     onClick={() =>
                         onLinkClick?.({

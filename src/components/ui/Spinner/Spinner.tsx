@@ -12,14 +12,27 @@ export interface SpinnerProps extends CommonProps {
     size?: string | number
 }
 
+// Healthcare-themed spinner: spinning medical cross
+const MedicalCrossSpinner = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    viewBox="0 0 48 48"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <rect x="20" y="4" width="8" height="40" rx="4" fill="currentColor" />
+    <rect x="4" y="20" width="40" height="8" rx="4" fill="currentColor" />
+  </svg>
+);
+
 const Spinner = forwardRef((props: SpinnerProps, ref) => {
     const {
         className,
         customColorClass,
         enableTheme = true,
-        indicator: Component = CgSpinner,
+        indicator: Component = MedicalCrossSpinner,
         isSpining = true,
-        size = 20,
+        size = 32,
         style,
         ...rest
     } = props

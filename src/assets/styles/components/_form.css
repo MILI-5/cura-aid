@@ -15,15 +15,34 @@
 }
 
 .form-label {
-  @apply flex items-center font-semibold;
+  @apply flex items-center font-semibold absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-900/80 px-2 transition-all duration-200 pointer-events-none z-10 origin-left;
+  transform: translateY(-50%) scale(1);
+}
 
-  &.invalid {
-    @apply text-error;
-  }
+input:focus + .form-label,
+input:not(:placeholder-shown) + .form-label,
+textarea:focus + .form-label,
+textarea:not(:placeholder-shown) + .form-label {
+  top: -0.8rem;
+  left: 1rem;
+  font-size: 0.85rem;
+  color: var(--primary);
+  background: rgba(255,255,255,0.95);
+  padding: 0 0.5rem;
+  transform: scale(0.95);
+}
+
+input, textarea, select {
+  @apply w-full rounded-xl px-4 py-3 bg-white/70 dark:bg-gray-900/70 border-2 border-gray-200 dark:border-gray-700 shadow focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all duration-200 outline-none;
+  font-size: 1rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  @apply bg-white dark:bg-gray-900 border-primary shadow-lg;
 }
 
 .form-explain {
-  @apply text-error absolute font-semibold;
+  @apply text-error absolute font-semibold left-4 bottom-[-1.5rem];
 }
 
 .form-container {

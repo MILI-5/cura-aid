@@ -165,6 +165,8 @@ const ToastWrapper = forwardRef((props: ToastWrapperProps, ref: any) => {
                 callback?.(thisRef)
             }}
             className={classNames('toast', block && 'w-full')}
+            aria-live="assertive"
+            role="region"
         >
             {messageElements}
         </div>

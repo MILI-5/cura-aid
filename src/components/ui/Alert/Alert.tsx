@@ -131,11 +131,11 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
         'alert',
         typeMap.backgroundColor,
         typeMap.textColor,
+        'font-semibold', // Ensure readable text on pastel backgrounds
         !title ? 'font-semibold' : '',
         closable ? 'justify-between' : '',
         closable && !title ? 'items-center' : '',
         !triggerByToast && 'rounded-xl',
-
         className,
     )
 
@@ -159,6 +159,8 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
                 },
             }}
             {...rest}
+            aria-live="assertive"
+            role="alert"
         >
             <div
                 className={classNames(

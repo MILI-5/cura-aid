@@ -39,10 +39,10 @@ const DefaultItem = ({
             <MenuCollapse
                 key={nav.key}
                 label={
-                    <>
+                    <div className="side-nav-link flex items-center gap-2">
                         <VerticalMenuIcon icon={nav.icon} />
                         <span>{t(nav.translateKey, nav.title)}</span>
-                    </>
+                    </div>
                 }
                 eventKey={nav.key}
                 expanded={false}
@@ -64,7 +64,7 @@ const CollapsedItem = ({
     userAuthority,
 }: CollapsedItemProps) => {
     const menuItem = (
-        <MenuItem key={nav.key} eventKey={nav.key} className="mb-2">
+        <MenuItem key={nav.key} eventKey={nav.key} className="mb-2 side-nav-link">
             <VerticalMenuIcon icon={nav.icon} />
         </MenuItem>
     )

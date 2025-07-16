@@ -12,6 +12,7 @@ import type {
     MouseEvent,
     ElementType,
 } from 'react'
+import { motion } from 'framer-motion';
 
 export interface ButtonProps
     extends CommonProps,
@@ -46,6 +47,21 @@ const radiusShape: Record<TypeAttributes.Shape, string> = {
     circle: 'rounded-full',
     none: 'rounded-none',
 }
+
+// Utility to check if a color is "dark" enough for white text
+function isColorDark(hex: string) {
+    if (!hex) return true;
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const r = parseInt(c.substr(0, 2), 16);
+    const g = parseInt(c.substr(2, 2), 16);
+    const b = parseInt(c.substr(4, 2), 16);
+    // Luminance formula
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance < 0.6;
+}
+
+const vibrantShadow = '0 4px 16px rgba(56,189,248,0.18), 0 1.5px 8px rgba(16,185,129,0.10)';
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
     const {
@@ -118,17 +134,24 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         return sizeClass
     }
 
-    const disabledClass = 'opacity-50 cursor-not-allowed'
+    const disabledClass = 'bg-gray-200 text-gray-400 cursor-not-allowed';
 
     const solidColor = () => {
+        // Try to get the CSS variable for primary color
+        let primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#2a85ff';
+        // Fallback for tenant-primary
+        if (!primary || primary === '') {
+            primary = getComputedStyle(document.documentElement).getPropertyValue('--tenant-primary').trim() || '#2a85ff';
+        }
+        const useWhiteText = isColorDark(primary);
         const btn = {
             bgColor: active ? `bg-primary-deep` : `bg-primary`,
-            textColor: 'text-neutral',
+            textColor: useWhiteText ? 'text-neutral' : 'text-gray-900',
             hoverColor: active ? '' : `hover:bg-primary-mild`,
             activeColor: ``,
-        }
-        return getBtnColor(btn)
-    }
+        };
+        return getBtnColor(btn);
+    };
 
     const plainColor = () => {
         const btn = {
@@ -191,6 +214,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
             active,
             unclickable,
         }),
+        'transition-all duration-200',
+        'shadow',
     )
 
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -238,15 +263,22 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
     }
 
     return (
-        <Component
+        <motion.button
             ref={ref}
             className={classes}
-            {...rest}
+            type={rest.type || 'button'}
+            disabled={unclickable}
             onClick={handleClick}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.96 }}
+            {...rest}
         >
-            {renderChildren()}
-        </Component>
-    )
+            {loading && <Spinner className="mr-2" size={buttonSize} />}
+            {icon && iconAlignment === 'start' && <span className="mr-2">{icon}</span>}
+            {children}
+            {icon && iconAlignment === 'end' && <span className="ml-2">{icon}</span>}
+        </motion.button>
+    );
 })
 
 Button.displayName = 'Button'

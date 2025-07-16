@@ -9,25 +9,36 @@ import { treatmentTypesData } from '../data/treatmentTypesData';
 import { useNavigate } from 'react-router-dom';
 import { usGenerativeChatStore } from '@/views/chat-bot/store/generativeChatStore';
 import { useAuthStore } from '@/components/layouts/AuthLayout/store/useAuthStore';
+import { GlassCard } from '@/components/ui/Card';
+
+interface Step {
+  icon: JSX.Element;
+  text: string;
+  description: string;
+}
+interface TreatmentResult {
+  subtype: string;
+  majorTitle: string;
+}
 
 const StartYourJourney = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [uploadReportPopupStatus, setUploadReportPopupStatus] = useState(false);
-  const { hcfData } = useAuthStore()
-  const [steps, setSteps] = useState<{ icon: JSX.Element; text: string; description: string; }[]>([])
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const wrapperRef = useRef(null);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const [uploadReportPopupStatus, setUploadReportPopupStatus] = useState<boolean>(false);
+  const { hcfData } = useAuthStore();
+  const [steps, setSteps] = useState<Step[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState<TreatmentResult[]>([]);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
-  const { setPushedMessages } = usGenerativeChatStore()
+  const { setPushedMessages } = usGenerativeChatStore();
 
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % steps.length);
     }, 2000);
     return () => clearInterval(timer);
-  }, []);
+  }, [steps.length]);
 
   useEffect(() => {
     if (hcfData?.type !== 'hospital') {
@@ -37,33 +48,31 @@ const StartYourJourney = () => {
         { icon: <BsHospital className="w-6 h-6" />, text: "Select Hospital", description: "Find the best hospitals" },
         { icon: <BiUser className="w-6 h-6" />, text: "Select Doctor", description: "Choose top specialists" },
         { icon: <CiSettings className="w-6 h-6" />, text: "Finalize Treatment", description: "Confirm your options" }
-      ])
+      ]);
     } else {
-      setSteps(
-        [
+      setSteps([
           { icon: <BiPlusCircle className="w-6 h-6" />, text: "Choose Treatment", description: "Browse treatment options" },
           { icon: <FiFileText className="w-6 h-6" />, text: "Get Treatment Plan", description: "Receive a personalized plan" },
           { icon: <BiUser className="w-6 h-6" />, text: "Select Doctor", description: "Choose top specialists" },
           { icon: <CiSettings className="w-6 h-6" />, text: "Finalize Treatment", description: "Confirm your options" }
-        ]
-      )
+      ]);
     }
-  }, [hcfData])
+  }, [hcfData]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
     searchTreatments(value);
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     searchTreatments(searchTerm);
   };
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (wrapperRef.current && event.target instanceof Node && !wrapperRef.current.contains(event.target)) {
         setIsInputFocused(false);
       }
     }
@@ -74,11 +83,11 @@ const StartYourJourney = () => {
     };
   }, [wrapperRef]);
 
-  const searchTreatments = (term) => {
+  const searchTreatments = (term: string) => {
     if (!term.trim()) {
       // If search term is empty, show all treatments
-      const allTreatments = treatmentTypesData.flatMap(category =>
-        category.subtypes.map(subtype => ({
+      const allTreatments: TreatmentResult[] = treatmentTypesData.flatMap(category =>
+        category.subtypes.map((subtype: string) => ({
           subtype,
           majorTitle: category.majorTitle
         }))
@@ -88,12 +97,12 @@ const StartYourJourney = () => {
     }
 
     // Filter treatments based on search term
-    const filteredResults = treatmentTypesData.flatMap(category => {
-      const matchingSubtypes = category.subtypes.filter(subtype =>
+    const filteredResults: TreatmentResult[] = treatmentTypesData.flatMap(category => {
+      const matchingSubtypes = category.subtypes.filter((subtype: string) =>
         subtype.toLowerCase().includes(term.toLowerCase())
       );
 
-      return matchingSubtypes.map(subtype => ({
+      return matchingSubtypes.map((subtype: string) => ({
         subtype,
         majorTitle: category.majorTitle
       }));
@@ -103,11 +112,11 @@ const StartYourJourney = () => {
   };
 
   // Handle selection of a treatment
-  const handleSelectTreatment = (treatment) => {
+  const handleSelectTreatment = (treatment: TreatmentResult) => {
     setSearchTerm(treatment.subtype);
     setIsInputFocused(false);
-    setPushedMessages(treatment.subtype)
-    navigate(`/chat-bot`)
+    setPushedMessages(treatment.subtype);
+    navigate(`/chat-bot`);
     // You can add additional logic here, like navigating to a treatment page
   };
 
@@ -206,11 +215,10 @@ const StartYourJourney = () => {
 
         <div className="relative flex flex-col md:flex-row justify-between gap-y-4 md:gap-0 z-[3]">
           {steps.map((step, index) => (
-            <div
+            <GlassCard
               key={index}
-              className={`flex flex-col items-center w-full md:w-40 transition-all duration-300
-                ${index === activeStep ? 'scale-110' : 'scale-100'}
-              `}
+              className={`flex flex-col items-center w-full md:w-40 transition-all duration-300 p-4 ${index === activeStep ? 'scale-110' : 'scale-100'}`}
+              style={{ minHeight: 120 }}
             >
               <div
                 className={`w-16 h-16 rounded-full flex items-center justify-center mb-2 relative z-[2]
@@ -233,28 +241,12 @@ const StartYourJourney = () => {
               `}>
                 {step.description}
               </p>
-            </div>
+            </GlassCard>
           ))}
         </div>
       </div>
 
 
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slide-up {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out;
-        }
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

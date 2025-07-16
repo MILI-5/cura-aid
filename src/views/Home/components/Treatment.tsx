@@ -43,8 +43,8 @@ type TreatmentRowProps = {
     rowIndex: number
 }
 
-const getSpecialtyIcon = (title) => {
-    const iconProps = { className: 'w-6 h-6' }
+const getSpecialtyIcon = (title: string) => {
+    const iconProps = { className: 'w-6 h-6', role: 'img', 'aria-label': title };
 
     switch (title) {
         case 'Organ Transplant':

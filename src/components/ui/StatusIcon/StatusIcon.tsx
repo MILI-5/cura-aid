@@ -44,7 +44,7 @@ const StatusIcon = (props: StatusIconProps) => {
     const icon = ICONS[type]
 
     return (
-        <span className={`text-2xl ${iconColor || icon.color}`}>
+        <span className={`text-2xl ${iconColor || icon.color}`} role="img" aria-label={type}>
             {custom || icon.icon}
         </span>
     )

@@ -94,6 +94,7 @@ const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
         const stringCentralized = {
             transform: `translateX(-50%) scale(${scale})`,
         }
+        // If no children, show a healthcare-themed SVG icon as placeholder
         children = (
             <span
                 ref={avatarChildren}
@@ -106,7 +107,19 @@ const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
                     ...(typeof size === 'number' ? { height: size } : {}),
                 }}
             >
-                {children}
+                {children || (
+                    <svg
+                        width={typeof size === 'number' ? size / 2 : 24}
+                        height={typeof size === 'number' ? size / 2 : 24}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ display: 'block', margin: '0 auto', background: '#e0f2fe', borderRadius: '50%' }}
+                    >
+                        <rect width="24" height="24" rx="12" fill="#e0f2fe" />
+                        <path d="M12 7v10M7 12h10" stroke="#0ea5e9" strokeWidth="2.2" strokeLinecap="round" />
+                    </svg>
+                )}
             </span>
         )
     }

@@ -14,6 +14,8 @@ export interface DialogProps extends ReactModal.Props {
     width?: number
 }
 
+const vibrantDialogShadow = '0 8px 32px 0 rgba(56,189,248,0.18), 0 2px 12px 0 rgba(16,185,129,0.10)';
+
 const Dialog = (props: DialogProps) => {
     const currentSize = useWindowSize()
 
@@ -70,7 +72,7 @@ const Dialog = (props: DialogProps) => {
 
     const defaultDialogContentClass = 'dialog-content'
 
-    const dialogClass = classNames(defaultDialogContentClass, contentClassName)
+    const dialogClass = classNames(defaultDialogContentClass, contentClassName, 'transition-all duration-200');
 
     return (
         <Modal
@@ -88,16 +90,15 @@ const Dialog = (props: DialogProps) => {
             bodyOpenClassName={classNames('dialog-open', bodyOpenClassName)}
             ariaHideApp={false}
             isOpen={isOpen}
-            style={{ ...contentStyle }}
+            style={{ ...contentStyle, content: { ...contentStyle.content, boxShadow: vibrantDialogShadow, border: '2px solid #67e8f9', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' } }}
             closeTimeoutMS={closeTimeoutMS}
             {...rest}
         >
             <motion.div
                 className={dialogClass}
-                initial={{ transform: 'scale(0.9)' }}
-                animate={{
-                    transform: isOpen ? 'scale(1)' : 'scale(0.9)',
-                }}
+                initial={{ transform: 'scale(0.96)' }}
+                animate={{ transform: isOpen ? 'scale(1)' : 'scale(0.96)' }}
+                whileHover={{ scale: 1.025 }}
             >
                 {closable && renderCloseButton}
                 {children}

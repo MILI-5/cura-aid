@@ -25,6 +25,7 @@ const ActionLink = (props: ActionLink) => {
         className: classNames(
             themeColor && 'text-primary',
             'hover:underline',
+            'hover:text-primary/80', // Slightly darker on hover for contrast
             className,
         ),
     }
